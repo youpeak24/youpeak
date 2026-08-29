@@ -49,28 +49,12 @@ RxBool isDarkMode = false.obs;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AdminSettingsApi.callApi();
+
   await GetStorage.init();
 
-  onInitializeBranchIo();
-  CustomCheckInternet.onCheck();
-
-  DeepLinkServices.onInitDeepLinks();
-
-  await MobileAds.instance.initialize();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  final deviceId = await MobileDeviceIdentifier().getDeviceId();
-
-  // final deviceId = await PlatformDeviceId.getDeviceId;
-  final fcmToken = await FirebaseMessaging.instance.getToken();
-
-  AppSettings.showLog("Android Id => $deviceId");
-  AppSettings.showLog("FCM Token => $fcmToken");
-
-  if (deviceId != null && fcmToken != null) await Database().init(deviceId, fcmToken);
 
   await Preference().instance();
   Get.put(LocalizationService());
@@ -85,25 +69,23 @@ void main() async {
     return true;
   };
 
-  await PermissionHandler.requestPermission();
-
-  await LocalNotificationServices.initNotification();
-  NotificationServices().firebaseInit();
-
-  CustomWatchTime.init();
-
-  await createEngine();
-  await stripeInit();
-
-  if (GetProfileApi.profileModel?.user != null && AdminSettingsApi.adminSettingsModel?.setting != null) {
-    AppSettings.isAvailableProfileData.value = true;
-  } else {
-    AppSettings.isAvailableProfileData.value = false;
-  }
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  // Non-blocking background initializations
+  onInitializeBranchIo();
+  CustomCheckInternet.onCheck();
+  DeepLinkServices.onInitDeepLinks();
+  MobileAds.instance.initialize();
+  PermissionHandler.requestPermission();
+  LocalNotificationServices.initNotification();
+  NotificationServices().firebaseInit();
+  CustomWatchTime.init();
+  createEngine();
+  stripeInit();
+
   runApp(const MyApp());
 }
 

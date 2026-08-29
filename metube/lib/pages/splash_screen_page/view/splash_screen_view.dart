@@ -29,6 +29,9 @@ import 'package:youpeak/utils/style/app_style.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:quick_actions/quick_actions.dart';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
+
 class SplashScreenView extends StatefulWidget {
   const SplashScreenView({super.key});
 
@@ -41,24 +44,50 @@ class _SplashScreenViewState extends State<SplashScreenView> {
 
   @override
   void initState() {
-    checkForceUpdate();
     super.initState();
+    initApp();
+  }
+
+  Future<void> initApp() async {
+    try {
+      final deviceId = await MobileDeviceIdentifier().getDeviceId().timeout(
+        const Duration(seconds: 3),
+        onTimeout: () => "",
+      );
+      final fcmToken = await FirebaseMessaging.instance.getToken().timeout(
+        const Duration(seconds: 3),
+        onTimeout: () => "",
+      );
+
+      if (deviceId != null && fcmToken != null) {
+        await Database().init(deviceId, fcmToken);
+      }
+
+      await Future.wait([
+        AdminSettingsApi.callApi().timeout(const Duration(seconds: 4), onTimeout: () => null),
+        if (Database.loginUserId != null)
+          GetProfileApi.callApi(Database.loginUserId!).timeout(const Duration(seconds: 4), onTimeout: () => null),
+      ]);
+    } catch (e) {
+      log("Splash init error: $e");
+    }
+
+    checkForceUpdate();
   }
 
   Future<void> checkForceUpdate() async {
     final packageInfo = await PackageInfo.fromPlatform();
     final currentVersion = packageInfo.version;
     log("Current version ==> ${packageInfo.version}");
- 
-    final latestVersion =
-        Platform.isIOS ? AdminSettingsApi.adminSettingsModel?.setting?.iosAppVersion ?? "" : AdminSettingsApi.adminSettingsModel?.setting?.androidAppVersion ?? "";
 
-    log("Latest  version ==> $latestVersion");
+    final latestVersion = Platform.isIOS
+        ? AdminSettingsApi.adminSettingsModel?.setting?.iosAppVersion ?? ""
+        : AdminSettingsApi.adminSettingsModel?.setting?.androidAppVersion ?? "";
+
+    log("Latest version ==> $latestVersion");
     if (latestVersion.isEmpty) {
       log("⚠️ Latest version missing from API");
-
       splashScreen();
-
       return;
     }
     if (isUpdateRequired(currentVersion, latestVersion)) {
@@ -85,7 +114,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
   void splashScreen() {
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     Timer(
-      const Duration(seconds: 3),
+      const Duration(milliseconds: 500),
       () {
         print("Database.isNewUser:::::::::::::::::::${Database.isNewUser}");
         BranchIoServices.onListenBranchIoLinks();
@@ -102,8 +131,9 @@ class _SplashScreenViewState extends State<SplashScreenView> {
               print("No internet — navigating to DownloadView...");
               Get.offAll(() => const DownloadView());
             } else if (GetProfileApi.profileModel?.user == null) {
-              print("User deleted from server — redirecting to login...");
+              print("User profile null or deleted — redirecting to login...");
               Database.logOut();
+              Get.offAll(() => const LoginView());
             } else if (GetProfileApi.profileModel!.user!.isBlock == true) {
               Get.dialog(const BlockedUserDialog(), barrierDismissible: false);
             } else {
@@ -137,12 +167,22 @@ class _SplashScreenViewState extends State<SplashScreenView> {
       body: Stack(
         clipBehavior: Clip.none,
         children: [
+          // Lightweight gradient background replaces heavy 3.2MB splash_image.png
           Container(
             height: Get.height,
             width: Get.width,
-            child: Image.asset(
-              AppIcons.splashImage,
-              fit: BoxFit.cover,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFFFF5A70),
+                  Color(0xFFFF8FA0),
+                  Color(0xFFFFCDD5),
+                  Color(0xFFFFF0F2),
+                ],
+                stops: [0.0, 0.35, 0.65, 1.0],
+              ),
             ),
           ),
           const Positioned(
@@ -159,7 +199,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
                 child: Column(
               children: [
                 Image.asset(
-                  AppIcons.splashLogo,
+                  AppIcons.appLogo,
                   width: 84,
                   height: 84,
                 ).paddingOnly(bottom: 2),

@@ -1,3 +1,9 @@
+//dns resolution fix for Node 18+ & MongoDB Atlas SRV
+const dns = require("node:dns");
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder("ipv4first");
+}
+
 //express
 const express = require("express");
 const app = express();
