@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "554624718564",
+    "project_id": "youpeak-9ff65",
+    "storage_bucket": "youpeak-9ff65.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:554624718564:android:9bd5d288681ec33ba8fef1",
+        "android_client_info": {
+          "package_name": "com.YouPeak.Live1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-zboFukcDVSCNThxp6ejEDRXCR_j-ijE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
