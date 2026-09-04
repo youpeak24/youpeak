@@ -1,0 +1,9 @@
+{
+  "name": "youpeak-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd admin/frontend && npm install && npm run build",
+    "start": "cd admin/frontend && npm start"
+  }
+}

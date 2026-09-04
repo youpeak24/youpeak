@@ -1,43 +1,15 @@
 {
   "version": 2,
-  "name": "youpeak",
-  "builds": [
+  "buildCommand": "cd admin/frontend && npm install --legacy-peer-deps && npm run build",
+  "outputDirectory": "admin/frontend/build",
+  "rewrites": [
     {
-      "src": "admin/frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
+      "source": "/api/(.*)",
+      "destination": "functions/backend/index.js"
     },
     {
-      "src": "functions/backend/index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "functions/backend/index.js"
-    },
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/images/(.*)",
-      "dest": "/images/$1"
-    },
-    {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/favicon.ico"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
