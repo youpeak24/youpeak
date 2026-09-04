@@ -20,47 +20,16 @@
       "dest": "functions/backend/index.js"
     },
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
-    },
-    {
-      "src": "/favicon.ico",
-      "dest": "/favicon.ico"
-    },
-    {
-      "src": "/MetubeLogo.png",
-      "dest": "/MetubeLogo.png"
-    },
-    {
-      "src": "/YouPeakLogo.png",
-      "dest": "/YouPeakLogo.png"
-    },
-    {
-      "src": "/logo192.png",
-      "dest": "/logo192.png"
-    },
-    {
-      "src": "/logo512.png",
-      "dest": "/logo512.png"
-    },
-    {
-      "src": "/robots.txt",
-      "dest": "/robots.txt"
-    },
-    {
-      "src": "/asset-manifest.json",
-      "dest": "/asset-manifest.json"
+      "src": "/(.*\\.[^/]+)$",
+      "dest": "admin/frontend/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "admin/frontend/index.html"
     }
   ]
 }
+
 
 
 
