@@ -1,33 +1,18 @@
 {
-  "version": 2,
-  "name": "youpeak-platform",
-  "builds": [
+  "buildCommand": "npm run build --prefix admin/frontend",
+  "outputDirectory": "admin/frontend/build",
+  "rewrites": [
     {
-      "src": "admin/frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
+      "source": "/api/:path*",
+      "destination": "/functions/backend/index.js"
     },
     {
-      "src": "functions/backend/index.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "functions/backend/index.js"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "admin/frontend/index.html"
+      "source": "/((?!api/|static/|manifest\\.json|favicon\\.ico|logo192\\.png|logo512\\.png|robots\\.txt|asset-manifest\\.json|.*\\.[a-zA-Z0-9]+$).*)",
+      "destination": "/index.html"
     }
   ]
 }
+
 
 
 
