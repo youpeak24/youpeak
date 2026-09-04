@@ -48,16 +48,23 @@ export const loginAdmin = (login, navigate, onFinish) => async (dispatch) => {
     .then((res) => {
       if (res.data.status) {
         dispatch({ type: ActionType.LOGIN_ADMIN, payload: res.data.token });
+        if (res.data.admin) {
+          sessionStorage.setItem("admin", JSON.stringify(res.data.admin));
+        }
         setToast("success", "Login Successfully!");
         setTimeout(() => {
-          navigate("/admin/mainDashboard");
+          if (res.data.admin?.role === "AGENCY_ADMIN") {
+            navigate("/admin/agencyDashboard");
+          } else {
+            navigate("/admin/mainDashboard");
+          }
         }, 100);
       } else {
         setToast("error", res.data.message);
       }
     })
     .catch((error) => {
-      setToast("error", error.response.data.message);
+      setToast("error", error.response?.data?.message || error.message || "Login failed");
     })
     .finally(() => {
       if (onFinish) onFinish();

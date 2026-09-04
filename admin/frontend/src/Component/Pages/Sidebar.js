@@ -49,29 +49,34 @@ const Sidebar = () => {
     sessionStorage.removeItem("multiButton");
   };
 
-  const navBarArray = [
-    {
-      name: "Dashboard",
-      path: "/admin/mainDashboard",
-      navIcon: <IconHome />,
-      onClick: handleCloseFunction,
-    },
-  ];
+  const adminObj = JSON.parse(sessionStorage.getItem("admin") || "{}");
+  const isAgencyAdmin = adminObj?.role === "AGENCY_ADMIN";
+
+  const navBarArray = isAgencyAdmin
+    ? [
+        {
+          name: "Agency Dashboard",
+          path: "/admin/agencyDashboard",
+          navIcon: <IconHome />,
+          onClick: handleCloseFunction,
+        },
+      ]
+    : [
+        {
+          name: "Dashboard",
+          path: "/admin/mainDashboard",
+          navIcon: <IconHome />,
+          onClick: handleCloseFunction,
+        },
+      ];
 
   const generalArray = [
-    {
-      name: "Setting",
-      path: "/admin/settingPage",
-      navIcon: <IconSettings />,
-      onClick: handleCloseFunction,
-    },
     {
       name: "Profile",
       path: "/admin/profile",
       navIcon: <IconUserSquareRounded />,
       onClick: handleCloseFunction,
     },
-
     {
       name: "Logout",
       navIcon: <IconLogout />,
@@ -79,60 +84,80 @@ const Sidebar = () => {
     },
   ];
 
-  const groupedNav = [
-    {
-      heading: "AGENCY & REGIONAL",
-      items: [
+  const groupedNav = isAgencyAdmin
+    ? [
         {
-          name: "Geofenced Agencies",
-          path: "/admin/agency",
-          navIcon: <IconUserSquareRounded />,
-          onClick: handleCloseFunction,
+          heading: "AGENCY & REGIONAL",
+          items: [
+            {
+              name: "Agency Dashboard",
+              path: "/admin/agencyDashboard",
+              navIcon: <IconHome />,
+              onClick: handleCloseFunction,
+            },
+            {
+              name: "Agency Reports",
+              path: "/admin/agencyReports",
+              navIcon: <IconReport />,
+              onClick: handleCloseFunction,
+            },
+          ],
+        },
+      ]
+    : [
+        {
+          heading: "AGENCY & REGIONAL",
+          items: [
+            {
+              name: "Geofenced Agencies",
+              path: "/admin/agency",
+              navIcon: <IconUserSquareRounded />,
+              onClick: handleCloseFunction,
+            },
+            {
+              name: "Agency Dashboard",
+              path: "/admin/agencyDashboard",
+              navIcon: <IconHome />,
+              onClick: handleCloseFunction,
+            },
+            {
+              name: "Agency Reports",
+              path: "/admin/agencyReports",
+              navIcon: <IconReport />,
+              onClick: handleCloseFunction,
+            },
+          ],
         },
         {
-          name: "Agency Dashboard",
-          path: "/admin/agencyDashboard",
-          navIcon: <IconHome />,
-          onClick: handleCloseFunction,
+          heading: "USER MANAGEMENT",
+          items: [
+            {
+              name: "User",
+              path: "/admin/userTable",
+              path2: "/admin/userProfile",
+              navIcon: <IconUser />,
+              onClick: handleCloseFunction,
+            },
+            {
+              name: "Membership Tiers",
+              path: "/admin/membershipTiers",
+              navIcon: <IconAward />,
+              onClick: handleCloseFunction,
+            },
+            {
+              name: "Fraud & Account Security",
+              path: "/admin/fraudManagement",
+              navIcon: <IconHelpOctagon />,
+              onClick: handleCloseFunction,
+            },
+            {
+              name: "Referral Management",
+              path: "/admin/referralManagement",
+              navIcon: <IconAddressBook />,
+              onClick: handleCloseFunction,
+            },
+          ],
         },
-        {
-          name: "Agency Reports",
-          path: "/admin/agencyReports",
-          navIcon: <IconReport />,
-          onClick: handleCloseFunction,
-        },
-      ],
-    },
-    {
-      heading: "USER MANAGEMENT",
-      items: [
-        {
-          name: "User",
-          path: "/admin/userTable",
-          path2: "/admin/userProfile",
-          navIcon: <IconUser />,
-          onClick: handleCloseFunction,
-        },
-        {
-          name: "Membership Tiers",
-          path: "/admin/membershipTiers",
-          navIcon: <IconAward />,
-          onClick: handleCloseFunction,
-        },
-        {
-          name: "Fraud & Account Security",
-          path: "/admin/fraudManagement",
-          navIcon: <IconHelpOctagon />,
-          onClick: handleCloseFunction,
-        },
-        {
-          name: "Referral Management",
-          path: "/admin/referralManagement",
-          navIcon: <IconAddressBook />,
-          onClick: handleCloseFunction,
-        },
-      ],
-    },
     {
       heading: "CONTENT MANAGEMENT",
       items: [
@@ -271,7 +296,7 @@ const Sidebar = () => {
               <img src={Logo} alt="" width={"35px"} />
               <span
                 className="fs-4 fw-semibold"
-                style={{ color: "rgb(47 43 61 / 0.9)" }}
+                style={{ color: "var(--text-white)", letterSpacing: '0.5px' }}
               >
                 {projectName}
               </span>
@@ -288,13 +313,7 @@ const Sidebar = () => {
               MENU
             </p>
             {/* <nav style={{ backgroundColor: "#f0f0f0" }}> */}
-            <nav
-              style={{
-                background: "white",
-                borderRadius: "10px",
-                color: "#404040",
-              }}
-            >
+            <nav className="sidebar-nav-container">
               {/* About */}
               {navBarArray?.length > 0 && (
                 <>
@@ -339,13 +358,7 @@ const Sidebar = () => {
                 >
                   {group.heading}
                 </p>
-                <nav
-                  style={{
-                    background: "white",
-                    borderRadius: "10px",
-                    color: "#404040",
-                  }}
-                >
+                <nav className="sidebar-nav-container">
                   {group.items.map((res) => (
                     <Navigator
                       name={res?.name}
@@ -377,13 +390,7 @@ const Sidebar = () => {
             >
               SYSTEM
             </p>
-            <nav
-              style={{
-                background: "white",
-                borderRadius: "10px",
-                color: "#404040",
-              }}
-            >
+            <nav className="sidebar-nav-container">
               {/* About */}
               {generalArray?.length > 0 && (
                 <>

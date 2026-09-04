@@ -68,9 +68,23 @@ class MyWalletView extends StatelessWidget {
               width: Get.width,
               padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
               decoration: BoxDecoration(
-                color: AppColor.grey_50,
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF1D4ED8),
+                    Color(0xFF2563EB),
+                    Color(0xFF3B82F6),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 borderRadius: BorderRadius.circular(25),
-                image: const DecorationImage(image: AssetImage(AppIcons.walletImage), fit: BoxFit.cover),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x592563EB),
+                    blurRadius: 16,
+                    offset: Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

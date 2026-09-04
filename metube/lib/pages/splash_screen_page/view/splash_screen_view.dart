@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
-import 'package:youpeak/custom/custom_method/custom_toast.dart';
 import 'package:youpeak/custom/dialog/force_update_dialog.dart';
 import 'package:youpeak/custom/dialog/blocked_user_dialog.dart';
 import 'package:youpeak/database/database.dart';
@@ -167,21 +166,21 @@ class _SplashScreenViewState extends State<SplashScreenView> {
       body: Stack(
         clipBehavior: Clip.none,
         children: [
-          // Lightweight gradient background replaces heavy 3.2MB splash_image.png
+          // Forest Green gradient background — YouPeak Spec v3.0
           Container(
             height: Get.height,
             width: Get.width,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFFFF5A70),
-                  Color(0xFFFF8FA0),
-                  Color(0xFFFFCDD5),
-                  Color(0xFFFFF0F2),
+                  Color(0xFF0F3B20), // Deep forest green
+                  Color(0xFF1E4D2B), // Dark forest accent
+                  Color(0xFF0A7A44), // Primary Forest Green
+                  Color(0xFF129B57), // Vibrant forest green
                 ],
-                stops: [0.0, 0.35, 0.65, 1.0],
+                stops: [0.0, 0.30, 0.65, 1.0],
               ),
             ),
           ),
@@ -189,7 +188,7 @@ class _SplashScreenViewState extends State<SplashScreenView> {
             bottom: 50,
             right: 0,
             left: 0,
-            child: Center(child: SpinKitCircle(color: AppColor.lightPink, size: 60)),
+            child: Center(child: SpinKitCircle(color: AppColor.secondaryMintGreen, size: 60)),
           ),
           Positioned(
             top: 210,
@@ -198,11 +197,15 @@ class _SplashScreenViewState extends State<SplashScreenView> {
             child: Center(
                 child: Column(
               children: [
-                Image.asset(
-                  AppIcons.appLogo,
-                  width: 84,
-                  height: 84,
-                ).paddingOnly(bottom: 2),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(22),
+                  child: Image.asset(
+                    AppIcons.appLogo,
+                    width: 84,
+                    height: 84,
+                    fit: BoxFit.cover,
+                  ),
+                ).paddingOnly(bottom: 8),
                 Text(AppStrings.appName.tr, style: splashTitleStyle),
               ],
             )),

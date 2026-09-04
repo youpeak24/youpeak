@@ -20,7 +20,7 @@ const LazyImage = ({ imageSrc, noImage = noImage1 , width , height , style }) =>
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: "#f0f0f0",
+            background: "rgba(255, 255, 255, 0.05)",
             borderRadius: 5,
           }}
           // className="placeholder"

@@ -1792,3 +1792,112 @@ textarea.form-control:focus {
   box-shadow: none;
   outline: none;
 } */
+
+/* ==========================================================================
+   PRO-LEVEL DARK THEME OVERRIDES FOR YOUPEAK ADMIN PANEL
+   ========================================================================== */
+
+/* Fix 1: Pagination Container & Buttons */
+.custom-pagination,
+.pagination-content,
+.pagination-wrapper,
+.pagination-content-box {
+  background-color: #12112a !important;
+  background: #12112a !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  color: #ffffff !important;
+}
+
+.pagination-text,
+.pagination-limit-text p {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500 !important;
+}
+
+.pagination-select select,
+.pagination-limit-text select {
+  background-color: #1a1936 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 6px !important;
+}
+
+.page-item .page-link {
+  background-color: #1a1936 !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px !important;
+}
+
+.page-item .page-link:hover {
+  background-color: var(--new-color) !important;
+  color: #ffffff !important;
+  border-color: var(--new-color) !important;
+}
+
+.page-item.active .page-link {
+  background-color: var(--new-color) !important;
+  border-color: var(--new-color) !important;
+  color: #ffffff !important;
+}
+
+.page-item.disabled .page-link {
+  background-color: #141328 !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Fix 2: Form Inputs, Select Dropdowns & Country Select Boxes */
+.selector-custom select,
+.form-select,
+.form-control,
+select,
+input.form-control,
+textarea.form-control,
+.form-group select,
+.form-outline select {
+  background-color: #1a1936 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 8px !important;
+}
+
+.selector-custom select option,
+.form-select option,
+select option {
+  background-color: #1a1936 !important;
+  color: #ffffff !important;
+}
+
+.form-select:focus,
+.form-control:focus,
+select:focus,
+input:focus,
+textarea:focus {
+  background-color: #1f1e40 !important;
+  color: #ffffff !important;
+  border-color: var(--new-color) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+}
+
+/* Fix 3: Labels & Select Dropdowns in Form Dialogues & Import Pages */
+label,
+.label-selector-custom,
+.form-label,
+.form-group label {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Fix 4: Table placeholders and image avatars */
+.table-custom img,
+.navbar-profile-avatar,
+.profile-avatar-img,
+td img {
+  object-fit: cover !important;
+}
+
+/* Fix 5: MUI Skeleton dark contrast */
+.MuiSkeleton-root {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}

@@ -123,19 +123,24 @@ class ProfileView extends GetView<ProfileController> {
                           },
                         ),
                         Positioned(
-                            bottom: 6,
-                            right: 6,
-                            child: Container(
-                                height: 35,
-                                width: 35,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColor.white,
-                                  boxShadow: [
-                                    BoxShadow(color: AppColor.grey_400, blurRadius: 2),
-                                  ],
-                                ),
-                                child: const Center(child: Image(image: AssetImage(AppIcons.editButton), height: 20, width: 20)))),
+                          bottom: 6,
+                          right: 6,
+                          child: Container(
+                            height: 32,
+                            width: 32,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColor.primaryColor,
+                              border: Border.all(color: AppColor.white, width: 2),
+                              boxShadow: [
+                                BoxShadow(color: AppColor.black.withValues(alpha: 0.15), blurRadius: 4),
+                              ],
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.edit_rounded, size: 16, color: AppColor.white),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

@@ -213,17 +213,18 @@ const Title = (props) => {
                             : "Select Date Range"
                       }
                       style={{
-                        fontWeight: 400,
+                        fontWeight: 500,
                         cursor: "pointer",
-                        background: "white",
-                        color: "rgba(0, 0, 0, 0.87)",
+                        background: "#1C1538",
+                        color: "#F0EEFF",
+                        border: "1px solid rgba(124, 92, 252, 0.25)",
                         display: "flex",
                         width: "100%",
                         justifyContent: "end",
-                        fontSize: "15px",
-                        padding: "7px 20px",
+                        fontSize: "14px",
+                        padding: "8px 18px",
                         maxWidth: "250px",
-                        borderRadius: "5px",
+                        borderRadius: "8px",
                       }}
                     />
                   </DateRangePicker>

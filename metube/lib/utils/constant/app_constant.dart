@@ -1,15 +1,32 @@
+import 'package:flutter/foundation.dart';
+import 'dart:io' show Platform;
 import 'package:youpeak/pages/admin_settings/admin_settings_api.dart';
 
 class Constant {
-  static const baseURL = "https://youpeak.onrender.com/";
+  // ✅ LOCAL DEVELOPMENT: Smart URL for Web, Emulator, and Physical Mobile Devices
+  static String get baseURL {
+    if (kIsWeb) {
+      return "http://localhost:5001/";
+    } else {
+      // Physical mobile device connects via PC Local IP (10.140.10.65) or fallback
+      return "http://10.140.10.65:5001/";
+    }
+  }
+
+  static String get domain {
+    if (kIsWeb) {
+      return "http://localhost:5001";
+    } else {
+      return "http://10.140.10.65:5001";
+    }
+  }
+
   static const secretKey = "0LF8bPi5BnOgl3JjLGcfhfU3N7TAk8rJ";
   static const folderStructurePath = "YouPeak";
 
-  static const domain = "https://youpeak.onrender.com";
-
-  // static const baseURL = "Enter Your Base Url"; // Ex :- http://182.168.19.35:5000/
-  // static const secretKey = "Enter Your Secret Key"; // Ex :- ssf45sd1fs5d1sdf1s56165s15sdf1s
-  // static const folderStructurePath = "Enter Your Folder Structure";
+  // Production URLs (Uncomment for production build):
+  // static const baseURL = "https://youpeak-9ff65.web.app/api/";
+  // static const domain = "https://youpeak-9ff65.web.app";
 
   // >>>>> >>>>> >>>>> Admin Setting Api <<<<< <<<<< <<<<<<
   static const adminSetting = "client/setting";
@@ -178,36 +195,4 @@ class Constant {
   static const fetchLanguages = "client/translation/harvestActiveLanguages";
   static const fetchLanguageTranslations = "client/translation/harvestTranslation";
   static const fetchLatestLanguageVersion = "client/translation/revealLatestVersion";
-
-  // get single Language's translations
-  // GET translation/harvestTranslation(languageCode and module in query)
-
-  // get all Languages and their translations
-  // GET translation/harvestAllTranslations(module in query)
-
-  // get latest version of global Language system
-  // GET translation/revealLatestVersion
-
-  // get all active Languages
-  // GET translation/harvestActiveLanguages(start and limit in query)
-
-// >>>>> >>>>> >>>>> Not Using Api (Do Not Remove) <<<<< <<<<< <<<<<<
-
-// static const previewShorts = "client/video/shortsOfUser";
-// static const shortsChannelDetails = "client/video/channeldetailsOfShorts";
-// static const videoDetails = "client/video/getAllLikeThis";
-// static const watchHistory = "client/watchHistory/getWatchHistory";
-
-// >>>>> >>>>>  Download Related Api <<<<< <<<<<
-
-// static const downloadVideo = "client/userWiseDownload/downloadVideoHistory";
-// static const downloadedVideo = "client/userWiseDownload/getdownloadVideoHistory";
-
-// >>>>> >>>>>  Search Related Api <<<<< <<<<<
-
-// static const searchAllVideo = "client/video/search";
-// static const searchChannel = "client/user/searchChannel";
-// static const searchShortVideo = "client/video/searchShorts";
-// static const allVideoSearchHistory = "client/video/searchData";
-// static const clearSearchHistory = "client/video/clearAllSearchHistory";
 }

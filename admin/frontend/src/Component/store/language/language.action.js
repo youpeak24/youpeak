@@ -25,11 +25,12 @@ export const getLanguages = (start, limit, search) => (dispatch) => {
       if (res.status === false) {
          setToast("error", res.message || "Failed to fetch languages");
       } else if (res.status) {
+        const langList = res.languages || res.data || [];
         dispatch({
           type: GET_LANGUAGES,
           payload: {
-            languages: res.languages || res.data || [],
-            totalLanguages: res.total || 0,
+            languages: langList,
+            totalLanguages: res.total !== undefined && res.total !== null ? res.total : langList.length,
           },
         });
       }

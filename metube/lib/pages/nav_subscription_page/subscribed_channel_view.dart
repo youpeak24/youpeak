@@ -57,7 +57,7 @@ class SubscribedChannelView extends GetView<NavSubscriptionPageController> {
                             Get.to(
                               () => LivePage(
                                 isHost: false,
-                                localUserID: Database.loginUserId!,
+                                localUserID: Database.loginUserId ?? "",
                                 localUserName: AppSettings.channelName.value,
                                 roomID: GetLiveUsersApi.roomId(controller.mainSubscribedChannels![index].channelId!),
                               ),

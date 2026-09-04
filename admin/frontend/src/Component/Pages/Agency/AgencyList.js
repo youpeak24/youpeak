@@ -23,7 +23,7 @@ export default function AgencyList() {
   const [commissionRatePercentage, setCommissionRatePercentage] = useState(10);
   const [state, setState] = useState("");
   const [district, setDistrict] = useState("");
-  const [radiusKm, setRadiusKm] = useState(10);
+  const [radiusKm, setRadiusKm] = useState(50);
 
   const fetchAgencies = (p = page, limit = rowsPerPage) => {
     setLoading(true);
@@ -32,8 +32,8 @@ export default function AgencyList() {
       .then((res) => {
         setLoading(false);
         if (res.data.status) {
-          setAgencies(res.data.agencies);
-          setTotal(res.data.total);
+          setAgencies(res.data.agencies || []);
+          setTotal(res.data.total || 0);
         }
       })
       .catch((err) => {
@@ -49,7 +49,7 @@ export default function AgencyList() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name || !code || !email || !password) {
-      setToast("Please fill all required fields!", "warning");
+      setToast("warning", "Please fill all required fields!");
       return;
     }
 
@@ -60,24 +60,25 @@ export default function AgencyList() {
         email,
         password,
         mobileNumber,
-        commissionRatePercentage: Number(commissionRatePercentage),
+        commissionRatePercentage: Number(commissionRatePercentage) || 10,
         state,
         district,
-        radiusKm: Number(radiusKm),
+        radiusKm: Number(radiusKm) || 50,
       })
       .then((res) => {
-        if (res.data.status) {
-          setToast(res.data.message, "success");
+        if (res.data && res.data.status) {
+          setToast("success", res.data.message || "Agency created successfully!");
           setOpenModal(false);
           fetchAgencies();
           resetForm();
         } else {
-          setToast(res.data.message, "error");
+          setToast("error", res.data?.message || "Failed to create agency!");
         }
       })
       .catch((err) => {
         console.error(err);
-        setToast("Failed to save agency", "error");
+        const errMsg = err.response?.data?.message || err.message || "Failed to save agency";
+        setToast("error", errMsg);
       });
   };
 
@@ -90,15 +91,15 @@ export default function AgencyList() {
     setCommissionRatePercentage(10);
     setState("");
     setDistrict("");
-    setRadiusKm(10);
+    setRadiusKm(50);
   };
 
   const toggleStatus = (id) => {
     axios
       .patch(`admin/agency/toggleStatus?agencyId=${id}`)
       .then((res) => {
-        if (res.data.status) {
-          setToast(res.data.message, "success");
+        if (res.data && res.data.status) {
+          setToast("success", res.data.message);
           fetchAgencies();
         }
       })

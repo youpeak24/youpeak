@@ -238,7 +238,7 @@ const Dashboard = (props) => {
         hollow: {
           margin: 0,
           size: "55%",
-          background: "#fff",
+          background: "#1C1538",
           image: undefined,
           imageOffsetX: 0,
           imageOffsetY: 0,
@@ -252,9 +252,9 @@ const Dashboard = (props) => {
           },
         },
         track: {
-          background: "#dfdfdfef", // Change the background color here
+          background: "rgba(124, 92, 252, 0.15)",
           strokeWidth: "100%",
-          margin: 0, // margin is in pixels
+          margin: 0,
           dropShadow: {
             enabled: false,
             top: -3,
@@ -270,7 +270,7 @@ const Dashboard = (props) => {
             fontFamily: undefined,
             fontWeight: 700,
             fontSize: "17px",
-            color: "#404040",
+            color: "#F0EEFF",
             offsetY: -10,
           },
           value: {

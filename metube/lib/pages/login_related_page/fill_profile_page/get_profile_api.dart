@@ -28,9 +28,10 @@ class GetProfileApi {
 
         profileModel = GetProfileModel.fromJson(jsonResponse);
 
-        if (profileModel != null) {
+        if (profileModel != null && profileModel?.user != null) {
+          final userId = profileModel?.user?.id ?? loginUserId;
           Database.onSetIsNewUser(false);
-          Database.onSetLoginUserId(profileModel!.user!.id!);
+          Database.onSetLoginUserId(userId);
 
           AppSettings.channelName.value = profileModel?.user?.fullName ?? "";
 

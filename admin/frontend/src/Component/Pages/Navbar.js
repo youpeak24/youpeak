@@ -79,7 +79,7 @@ const Navbar = (props) => {
                       style={{marginLeft: "5px"}}
                     >
                       <img src={Logo} alt="" width={"40px"} />
-                      <span className="fs-3 fw-bold text-black">
+                      <span className="fs-3 fw-bold" style={{ color: "var(--text-white)" }}>
                         {projectName}
                       </span>
                     </Link>
@@ -103,8 +103,8 @@ const Navbar = (props) => {
                           <span className="navbar-profile-name">{adminName}</span>
                         </div>
                         <img
-                          src={admin?.image}
-                          alt="admin"
+                          src={admin?.image && admin.image.trim() !== "" ? admin.image : UserImage}
+                          alt="Admin Profile"
                           width="40px"
                           height="40px"
                           onError={(e) => {
@@ -112,6 +112,7 @@ const Navbar = (props) => {
                             e.target.src = UserImage;
                           }}
                           className="navbar-profile-avatar"
+                          style={{ objectFit: "cover", borderRadius: "8px" }}
                         />
                       </button>
 

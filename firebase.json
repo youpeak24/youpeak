@@ -1,4 +1,8 @@
 {
+  "functions": {
+    "source": "functions",
+    "predeploy": []
+  },
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
@@ -14,6 +18,10 @@
       ],
       "rewrites": [
         {
+          "source": "/api/**",
+          "function": "api"
+        },
+        {
           "source": "**",
           "destination": "/index.html"
         }
@@ -28,6 +36,10 @@
         "**/node_modules/**"
       ],
       "rewrites": [
+        {
+          "source": "/api/**",
+          "function": "api"
+        },
         {
           "source": "**",
           "destination": "/index.html"

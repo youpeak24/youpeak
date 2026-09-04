@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "name": "youpeak-backend",
+  "builds": [
+    {
+      "src": "functions/backend/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "functions/backend/index.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
+}

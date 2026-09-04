@@ -23,8 +23,13 @@ class SocketManagerController extends GetxController {
   Future<void> socketConnect() async {
     try {
       socket = io.io(
-        Constant.baseURL,
-        io.OptionBuilder().setTransports(['websocket']).setQuery({"liveRoom": "liveRoom:${Database.loginUserId}"}).build(),
+        Constant.domain,
+        io.OptionBuilder()
+            .setTransports(['polling', 'websocket'])
+            .disableAutoConnect()
+            .setReconnectionAttempts(2)
+            .setQuery({"liveRoom": "liveRoom:${Database.loginUserId}"})
+            .build(),
       );
 
       socket!.connect();

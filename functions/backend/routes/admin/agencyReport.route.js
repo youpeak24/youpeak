@@ -1,0 +1,8 @@
+const express = require("express");
+const route = express.Router();
+
+const AgencyReportController = require("../../controllers/admin/agencyReport.controller");
+
+route.get("/getAgencyReport", AgencyReportController.getAgencyReport);
+
+module.exports = route;

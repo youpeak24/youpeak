@@ -151,7 +151,7 @@ class User {
     _socialMediaLinks = json['socialMediaLinks'] != null ? SocialMediaLinks.fromJson(json['socialMediaLinks']) : null;
     _plan = json['plan'] != null ? Plan.fromJson(json['plan']) : null;
     _watchAds = json['watchAds'] != null ? WatchAds.fromJson(json['watchAds']) : null;
-    _id = json['_id'];
+    _id = json['_id'] ?? json['id'];
     _fullName = json['fullName'];
     _nickName = json['nickName'];
     _email = json['email'];

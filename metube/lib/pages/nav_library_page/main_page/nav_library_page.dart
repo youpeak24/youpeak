@@ -38,7 +38,10 @@ class NavLibraryView extends GetView<NavLibraryPageController> {
         appBar: AppBar(
           elevation: 0,
           backgroundColor: Colors.transparent,
-          leading: const Padding(padding: EdgeInsets.only(left: 15), child: Image(image: AssetImage(AppIcons.logo), height: 30, width: 30)),
+          leading: const Padding(
+            padding: EdgeInsets.only(left: 15),
+            child: Icon(Icons.play_arrow_rounded, color: AppColor.primaryColor, size: 30),
+          ),
           leadingWidth: 45,
           titleSpacing: 10,
           title: Text(
@@ -325,8 +328,13 @@ class LibraryItem extends StatelessWidget {
               child: Obx(
                 () => CircleAvatar(
                   radius: 23,
-                  backgroundColor: isDarkMode.value ? const Color(0xFF31252F) : const Color(0xFFFFF1F3),
-                  child: Image(image: AssetImage(iconPath), height: 18, width: 18),
+                  backgroundColor: isDarkMode.value ? const Color(0xFF281C5C) : const Color(0xFFEEF0FF),
+                  child: Image(
+                    image: AssetImage(iconPath),
+                    height: 18,
+                    width: 18,
+                    color: isDarkMode.value ? AppColor.white : AppColor.primaryColor,
+                  ),
                 ),
               ),
             ),

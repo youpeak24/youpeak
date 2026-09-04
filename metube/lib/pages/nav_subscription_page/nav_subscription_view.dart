@@ -45,7 +45,7 @@ class NavSubscriptionView extends GetView<NavSubscriptionPageController> {
     List videoTypes = ['video'.tr, 'shorts'.tr];
     List subscribeType = ["all".tr, "today".tr, "continueWatching".tr];
 
-    GetLiveUsersApi.callApi(loginUserId: Database.loginUserId!);
+    GetLiveUsersApi.callApi(loginUserId: Database.loginUserId ?? "");
     GetSubScribedChannelApiClass.startPagination = 0;
     controller.onGetSubscribedChannels();
     controller.selectedChannel = null;
@@ -68,17 +68,12 @@ class NavSubscriptionView extends GetView<NavSubscriptionPageController> {
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 15),
-            child: GestureDetector(
-              onTap: () {
-                GetSubScribedChannelApiClass.startPagination = 0;
-                GetSubScribedChannelApiClass.callApi();
-              },
-              child: const Image(
-                image: AssetImage(AppIcons.logo),
-                fit: BoxFit.contain,
-              ),
+          leading: const Padding(
+            padding: EdgeInsets.only(left: 15),
+            child: Icon(
+              Icons.play_arrow_rounded,
+              color: AppColor.primaryColor,
+              size: 30,
             ),
           ),
           leadingWidth: 45,
@@ -153,7 +148,7 @@ class NavSubscriptionView extends GetView<NavSubscriptionPageController> {
                                                   style: GoogleFonts.urbanist(fontSize: 17, fontWeight: FontWeight.bold),
                                                 ),
                                                 GestureDetector(
-                                                  onTap: () => Get.to(() => SubscribedChannelView(loginUserId: Database.loginUserId!)),
+                                                  onTap: () => Get.to(() => SubscribedChannelView(loginUserId: Database.loginUserId ?? "")),
                                                   child: Text(
                                                     AppStrings.viewAll.tr,
                                                     style: GoogleFonts.urbanist(color: AppColor.primaryColor, fontWeight: FontWeight.bold),
@@ -181,7 +176,7 @@ class NavSubscriptionView extends GetView<NavSubscriptionPageController> {
                                                                 Get.to(
                                                                   () => LivePage(
                                                                     isHost: false,
-                                                                    localUserID: Database.loginUserId!,
+                                                                    localUserID: Database.loginUserId ?? "",
                                                                     localUserName: AppSettings.channelName.value,
                                                                     roomID: GetLiveUsersApi.roomId(controller.mainSubscribedChannels![index].channelId!),
                                                                   ),

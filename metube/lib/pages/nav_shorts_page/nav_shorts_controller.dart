@@ -49,7 +49,7 @@ class NavShortsController extends GetxController {
 
   Future<void> onGetShortsVideos() async {
     _getShortsVideoModel =
-        await GetShortsVideoApi.callApi(Database.loginUserId!);
+        await GetShortsVideoApi.callApi(Database.loginUserId ?? "");
 
     final paginationData = _getShortsVideoModel?.shorts ?? [];
 

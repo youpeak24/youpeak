@@ -53,8 +53,12 @@ class _FillProfileViewState extends State<FillProfileView> {
   @override
   void initState() {
     super.initState();
+    AppSettings.emailController.text = widget.email;
     AppSettings.pickImagePath.value = widget.profileImage ?? "";
     AppSettings.nameController.text = widget.username ?? "";
+    if (widget.username != null && widget.username!.isNotEmpty) {
+      AppSettings.nickNameController.text = widget.username!.toLowerCase().replaceAll(" ", "_");
+    }
   }
 
   @override
@@ -131,14 +135,16 @@ class _FillProfileViewState extends State<FillProfileView> {
                         child: Container(
                             height: 28,
                             width: 28,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               shape: BoxShape.circle,
-                              color: AppColor.white,
+                              color: AppColor.primaryColor,
                               boxShadow: [
-                                BoxShadow(color: AppColor.grey_200, blurRadius: 1),
+                                BoxShadow(color: Colors.black26, blurRadius: 4),
                               ],
                             ),
-                            child: const Center(child: Image(image: AssetImage(AppIcons.editButton), height: 16, width: 16)))),
+                            child: const Center(
+                              child: Icon(Icons.edit, color: Colors.white, size: 16),
+                            ))),
                   ],
                 ),
               ),
@@ -157,7 +163,11 @@ class _FillProfileViewState extends State<FillProfileView> {
                         controller: AppSettings.nickNameController,
                         inputFormatter: [LengthLimitingTextInputFormatter(20)]),
                     SizedBox(height: SizeConfig.screenHeight / 40),
-                    ProfileTextFieldView(hintText: AppStrings.email.tr, controller: TextEditingController(text: widget.email), isReadOnly: true),
+                    ProfileTextFieldView(
+                      hintText: AppStrings.email.tr,
+                      controller: AppSettings.emailController,
+                      isReadOnly: false,
+                    ),
                     SizedBox(height: SizeConfig.screenHeight / 40),
                     const PhoneNumberTextFormField(),
                     SizedBox(height: SizeConfig.screenHeight / 40),
@@ -231,16 +241,16 @@ class _FillProfileViewState extends State<FillProfileView> {
               CustomFilledButton(
                 title: AppStrings.continueString.tr,
                 callback: () async {
-                  if (AppSettings.pickImagePath.isEmpty) {
-                    CustomToast.show("Please fill profile image !!");
-                    return;
-                  }
                   if (AppSettings.nameController.text.trim().isEmpty) {
                     CustomToast.show("Please enter your full name");
                     return;
                   }
                   if (AppSettings.nickNameController.text.trim().isEmpty) {
                     CustomToast.show(AppStrings.pleaseEnterNickName.tr);
+                    return;
+                  }
+                  if (AppSettings.emailController.text.trim().isEmpty) {
+                    CustomToast.show("Please enter your email address");
                     return;
                   }
                   if (AppSettings.phoneController.text.trim().isEmpty) {
@@ -251,26 +261,47 @@ class _FillProfileViewState extends State<FillProfileView> {
                     CustomToast.show("Please enter a valid mobile number");
                     return;
                   }
-                  if (_formKey.currentState!.validate() == false) {
+                  if (_formKey.currentState?.validate() == false) {
                     return;
                   }
-                  Get.dialog(const LoaderUi(color: AppColor.white), barrierDismissible: false);
-                  AppSettings.showLog("Fill Profile Complete");
-                  AppSettings.showLog("Fill Profile Complete ${AppSettings.pickImagePath.value}");
-                  if (AppSettings.pickImagePath.value.startsWith('https://')) {
-                    AppSettings.pickImagePath.value = await urlToFile(AppSettings.pickImagePath.value);
-                    AppSettings.showLog("Fill IMAGE ${AppSettings.pickImagePath.value} ");
-                  }
-                  final url = await ConvertChannelImageApi.callApi(AppSettings.pickImagePath.value);
-                  final isSuccess = await EditProfileApi.callApi(loginUserId: widget.loginUserId, profileImage: url ?? "", gender: AppSettings.selectedGender);
-                  Get.back();
-                  if (isSuccess) {
-                    CustomDialog.show(AppIcons.profileDoneLogo1, AppStrings.congratulations.tr, AppStrings.congratulationsNote.tr.tr);
-                    await GetProfileApi.callApi(widget.loginUserId);
-                    Get.back();
-                  }
-                  if (AdminSettingsApi.adminSettingsModel?.setting != null && Database.loginUserId != null && GetProfileApi.profileModel?.user != null) {
-                    Get.offAll(const MainHomePageView());
+                  try {
+                    Get.dialog(const LoaderUi(color: AppColor.white), barrierDismissible: false);
+                    AppSettings.showLog("Fill Profile Complete");
+
+                    String? url;
+                    if (AppSettings.pickImagePath.isNotEmpty) {
+                      if (AppSettings.pickImagePath.value.startsWith('https://') || AppSettings.pickImagePath.value.startsWith('http://')) {
+                        try {
+                          AppSettings.pickImagePath.value = await urlToFile(AppSettings.pickImagePath.value);
+                        } catch (e) {
+                          AppSettings.showLog("URL to file error: $e");
+                        }
+                      }
+                      if (AppSettings.pickImagePath.isNotEmpty && File(AppSettings.pickImagePath.value).existsSync()) {
+                        url = await ConvertChannelImageApi.callApi(AppSettings.pickImagePath.value);
+                      }
+                    }
+
+                    final isSuccess = await EditProfileApi.callApi(loginUserId: widget.loginUserId, profileImage: url, gender: AppSettings.selectedGender);
+                    
+                    // Always close loading dialog first!
+                    if (Get.isDialogOpen ?? false) {
+                      Get.back();
+                    }
+
+                    if (isSuccess) {
+                      CustomDialog.show(AppIcons.profileDoneLogo1, AppStrings.congratulations.tr, AppStrings.congratulationsNote.tr);
+                      await GetProfileApi.callApi(widget.loginUserId);
+                      Get.offAll(() => const MainHomePageView());
+                    } else {
+                      CustomToast.show(AppStrings.someThingWentWrong.tr);
+                    }
+                  } catch (e) {
+                    AppSettings.showLog("Fill profile submit error: $e");
+                    if (Get.isDialogOpen ?? false) {
+                      Get.back();
+                    }
+                    CustomToast.show(AppStrings.someThingWentWrong.tr);
                   }
                 },
               ),

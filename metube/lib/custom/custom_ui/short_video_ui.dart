@@ -52,12 +52,28 @@ class ShortVideoUi extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
             color:
-                isDarkMode.value ? AppColor.secondDarkMode : AppColor.grey_400,
-            borderRadius: BorderRadius.circular(20)),
+                isDarkMode.value ? AppColor.darkForestAccent : AppColor.grey_400,
+            borderRadius: BorderRadius.circular(12)), // 12px per Spec 2.D
         child: Stack(
           children: [
             PreviewVideoImage(videoId: videoId, videoImage: videoImage),
-            // ConvertedPathView(imageVideoPath: videoImage),
+            // Top-left Youpeak Green Play Icon badge per Spec 2.D
+            Positioned(
+              top: 8,
+              left: 8,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: AppColor.primaryColor,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.play_arrow_rounded,
+                  color: AppColor.white,
+                  size: 14,
+                ),
+              ),
+            ),
             Positioned(
               top: 10,
               right: 10,

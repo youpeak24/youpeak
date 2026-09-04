@@ -17,11 +17,12 @@ class EditProfileApi {
 
       final uri = Uri.parse('${Constant.baseURL + Constant.updateProfile}?userId=$loginUserId');
 
-      // Required 12 Field...
+      // Required Fields...
       final body = profileImage != null
           ? json.encode({
               "fullName": AppSettings.nameController.text.trim(),
               "nickName": AppSettings.nickNameController.text.trim(),
+              "email": AppSettings.emailController.text.trim(),
               "gender": gender,
               "mobileNumber": AppSettings.phoneController.text.trim(),
               "image": profileImage,
@@ -37,6 +38,7 @@ class EditProfileApi {
           : json.encode({
               "fullName": AppSettings.nameController.text.trim(),
               "nickName": AppSettings.nickNameController.text.trim(),
+              "email": AppSettings.emailController.text.trim(),
               "gender": gender,
               "mobileNumber": AppSettings.phoneController.text.trim(),
               "channelType": AppSettings.channelType.value.toString(),
@@ -51,7 +53,7 @@ class EditProfileApi {
 
       log("body ************ $body");
 
-      final response = await http.patch(uri, body: body, headers: headers);
+      final response = await http.patch(uri, body: body, headers: headers).timeout(const Duration(seconds: 15));
 
       final jsonResponse = jsonDecode(response.body);
 

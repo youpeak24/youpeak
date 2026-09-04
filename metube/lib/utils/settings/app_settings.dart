@@ -71,6 +71,7 @@ class AppSettings {
   static String ipAddress = "192.168.98.99";
 
   // >>>>>>>>>> Fill/Edit Profile Controller <<<<<<<<<
+  static TextEditingController emailController = TextEditingController();
   static TextEditingController nickNameController = TextEditingController();
   static TextEditingController phoneController = TextEditingController();
   static TextEditingController ageController = TextEditingController();

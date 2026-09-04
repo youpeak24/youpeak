@@ -58,6 +58,10 @@ class _EditProfileViewState extends State<EditProfileView> {
       text: GetProfileApi.profileModel?.user?.nickName ?? "",
     );
 
+    AppSettings.emailController = TextEditingController(
+      text: GetProfileApi.profileModel?.user?.email ?? "",
+    );
+
     AppSettings.phoneController = TextEditingController(
       text: GetProfileApi.profileModel?.user?.mobileNumber ?? "",
     );
@@ -171,24 +175,18 @@ class _EditProfileViewState extends State<EditProfileView> {
                       child: Container(
                         height: 28,
                         width: 28,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColor.white,
+                          color: AppColor.primaryColor,
                           boxShadow: [
                             BoxShadow(
-                              color: AppColor.grey_200,
-                              blurRadius: 1,
+                              color: Colors.black26,
+                              blurRadius: 4,
                             ),
                           ],
                         ),
                         child: const Center(
-                          child: Image(
-                            image: AssetImage(
-                              AppIcons.editButton,
-                            ),
-                            height: 16,
-                            width: 16,
-                          ),
+                          child: Icon(Icons.edit, color: Colors.white, size: 16),
                         ),
                       ),
                     ),
@@ -227,10 +225,8 @@ class _EditProfileViewState extends State<EditProfileView> {
                     /// EMAIL
                     ProfileTextFieldView(
                       hintText: "${AppStrings.email.tr} *",
-                      controller: TextEditingController(
-                        text: GetProfileApi.profileModel?.user?.email ?? "",
-                      ),
-                      isReadOnly: true,
+                      controller: AppSettings.emailController,
+                      isReadOnly: false,
                     ),
 
                     SizedBox(height: SizeConfig.screenHeight / 40),
@@ -521,40 +517,55 @@ class _EditProfileViewState extends State<EditProfileView> {
                   }
 
                   /// API CALL
-
-                  Get.dialog(
-                    const LoaderUi(
-                      color: AppColor.white,
-                    ),
-                    barrierDismissible: false,
-                  );
-
-                  String? imageUrl;
-
-                  if (AppSettings.pickImagePath.isNotEmpty) {
-                    imageUrl = await ConvertChannelImageApi.callApi(
-                      AppSettings.pickImagePath.value,
-                    );
-                  }
-
-                  final isSuccess = await EditProfileApi.callApi(
-                    loginUserId: Database.loginUserId!,
-                    profileImage: imageUrl,
-                    gender: AppSettings.selectedGender,
-                  );
-
-                  if (isSuccess) {
-                    Get.close(2);
-
-                    await GetProfileApi.callApi(
-                      Database.loginUserId!,
+                  try {
+                    Get.dialog(
+                      const LoaderUi(
+                        color: AppColor.white,
+                      ),
+                      barrierDismissible: false,
                     );
 
-                    CustomToast.show(
-                      "Profile Updated Successfully!",
+                    String? imageUrl;
+
+                    if (AppSettings.pickImagePath.isNotEmpty) {
+                      imageUrl = await ConvertChannelImageApi.callApi(
+                        AppSettings.pickImagePath.value,
+                      );
+                    }
+
+                    String userId = (Database.loginUserId != null && Database.loginUserId!.isNotEmpty)
+                        ? Database.loginUserId!
+                        : (GetProfileApi.profileModel?.user?.id ?? "");
+
+                    if (userId.isNotEmpty && (Database.loginUserId == null || Database.loginUserId!.isEmpty)) {
+                      await Database.onSetLoginUserId(userId);
+                    }
+
+                    if (userId.isEmpty) {
+                      if (Get.isDialogOpen ?? false) Get.back();
+                      CustomToast.show("User session expired. Please log in again.");
+                      return;
+                    }
+
+                    final isSuccess = await EditProfileApi.callApi(
+                      loginUserId: userId,
+                      profileImage: imageUrl,
+                      gender: AppSettings.selectedGender,
                     );
-                  } else {
-                    Get.back();
+
+                    if (Get.isDialogOpen ?? false) Get.back();
+
+                    if (isSuccess) {
+                      await GetProfileApi.callApi(userId);
+                      Get.back();
+                      CustomToast.show("Profile Updated Successfully!");
+                    } else {
+                      CustomToast.show(AppStrings.someThingWentWrong.tr);
+                    }
+                  } catch (e) {
+                    AppSettings.showLog("Edit profile submit error: $e");
+                    if (Get.isDialogOpen ?? false) Get.back();
+                    CustomToast.show(AppStrings.someThingWentWrong.tr);
                   }
                 },
               ),

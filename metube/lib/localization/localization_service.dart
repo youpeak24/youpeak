@@ -159,7 +159,7 @@ class LocalizationService extends GetxService {
 
   Future<void> fetchSupportedLanguages() async {
     try {
-      const url = "${Constant.baseURL}${Constant.fetchLanguages}?start=1&limit=20";
+      final url = "${Constant.baseURL}${Constant.fetchLanguages}?start=1&limit=20";
       final res = await http.get(Uri.parse(url), headers: {"key": Constant.secretKey});
 
       if (res.statusCode == 200) {

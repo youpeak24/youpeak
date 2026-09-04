@@ -16,6 +16,8 @@ import 'package:youpeak/utils/services/preview_image.dart';
 import 'package:youpeak/utils/settings/app_settings.dart';
 import 'package:youpeak/utils/string/app_string.dart';
 
+import 'package:youpeak/pages/nav_home_page/widget/premium_videos_shelf.dart';
+
 VideoDetailsModel? videoDetailsModel;
 
 class NavHomePageView extends StatefulWidget {
@@ -40,30 +42,39 @@ class _NavHomePageViewState extends State<NavHomePageView> {
         backgroundColor: Colors.transparent,
         leading: const Padding(
           padding: EdgeInsets.only(left: 15),
-          child: Image(image: AssetImage(AppIcons.logo), fit: BoxFit.contain),
+          child: Icon(Icons.play_arrow_rounded, color: AppColor.primaryColor, size: 30),
         ),
-        titleSpacing: 10,
-        title: Text(AppStrings.appName.tr, style: GoogleFonts.urbanist(fontSize: 20, fontWeight: FontWeight.bold)),
+        titleSpacing: 5,
+        title: Text(
+          AppStrings.appName.tr,
+          style: GoogleFonts.urbanist(fontSize: 22, fontWeight: FontWeight.w800, color: isDarkMode.value ? AppColor.white : AppColor.primaryTextIcons),
+        ),
         actions: [
-          InkWell(
-            onTap: () => Get.to(() => const SearchView(isSearchShorts: false)),
-            child: Obx(
-              () => Image.asset(
-                AppIcons.search,
-                width: 20,
-                color: isDarkMode.value ? AppColor.white : AppColor.black,
-              ),
-            ),
-          ),
-          const SizedBox(width: 18),
           GestureDetector(
             onTap: () => Get.to(() => const NotificationPageView()),
-            child: Obx(
-              () => Image.asset(
-                AppIcons.notification,
-                width: 18,
-                color: isDarkMode.value ? AppColor.white : AppColor.black,
-              ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Obx(
+                  () => Image.asset(
+                    AppIcons.notification,
+                    width: 22,
+                    color: isDarkMode.value ? AppColor.white : AppColor.primaryTextIcons,
+                  ),
+                ),
+                Positioned(
+                  right: 0,
+                  top: -2,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: AppColor.notificationAccent,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 18),
@@ -71,7 +82,7 @@ class _NavHomePageViewState extends State<NavHomePageView> {
             onTap: () => Get.to(() => const EarnRewardView()),
             child: Image.asset(
               AppIcons.earnRewardIcon,
-              width: 20,
+              width: 22,
             ),
           ),
           const SizedBox(width: 18),
@@ -79,7 +90,7 @@ class _NavHomePageViewState extends State<NavHomePageView> {
             onTap: () => Get.to(() => const ProfileView()),
             child: Obx(
               () => PreviewProfileImage(
-                size: 35,
+                size: 32,
                 id: Database.channelId ?? "",
                 image: AppSettings.profileImage.value,
                 fit: BoxFit.cover,
@@ -91,48 +102,78 @@ class _NavHomePageViewState extends State<NavHomePageView> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 10),
+          // Full-Width Search Bar directly under header (Spec 2.A)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+            child: GestureDetector(
+              onTap: () => Get.to(() => const SearchView(isSearchShorts: false)),
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  color: AppColor.searchContainerBg,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Image.asset(
+                      AppIcons.search,
+                      width: 18,
+                      color: AppColor.greyColor,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      "Search videos...",
+                      style: GoogleFonts.urbanist(
+                        fontSize: 14,
+                        color: AppColor.greyColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 5),
+          // Category Filter Chips (Spec 2.B)
           SizedBox(
             width: Get.width,
-            height: 35,
+            height: 36,
             child: GetBuilder<NavHomeController>(
               id: "onChangeTab",
               builder: (controller) => ListView.builder(
                 padding: EdgeInsets.zero,
                 scrollDirection: Axis.horizontal,
                 itemCount: controller.tabTitles.length,
-                itemBuilder: (context, index) => GestureDetector(
-                  onTap: () => controller.onChangeTab(index),
-                  child: Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    margin: const EdgeInsets.only(left: 10),
-                    decoration: BoxDecoration(
-                      color: controller.selectedTabIndex == index ? AppColor.primaryColor : AppColor.primaryColor.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Obx(
-                      () => Text(
+                itemBuilder: (context, index) {
+                  final isSelected = controller.selectedTabIndex == index;
+                  return GestureDetector(
+                    onTap: () => controller.onChangeTab(index),
+                    child: Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      margin: const EdgeInsets.only(left: 10),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColor.primaryColor : AppColor.secondaryMintGreen,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
                         controller.tabTitles[index],
                         style: GoogleFonts.urbanist(
-                          fontSize: 14,
-                          color: controller.selectedTabIndex == index
-                              ? isDarkMode.value
-                                  ? AppColor.white
-                                  : AppColor.white
-                              : isDarkMode.value
-                                  ? AppColor.white
-                                  : AppColor.primaryColor,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                          color: isSelected ? AppColor.white : AppColor.primaryTextIcons,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ),
-          const SizedBox(height: 10),
+          // Premium Videos Shelf [NEW FEATURE] (Spec 2.C)
+          const PremiumVideosShelf(),
+          const SizedBox(height: 5),
           GetBuilder<NavHomeController>(
             id: "onChangeTab",
             builder: (controller) => controller.selectedTabIndex == 0

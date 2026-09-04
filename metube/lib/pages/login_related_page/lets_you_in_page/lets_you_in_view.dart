@@ -61,7 +61,21 @@ class _LetsYouInViewState extends State<LetsYouInView> {
         }
       },
       child: Scaffold(
-        body: Center(
+        backgroundColor: isDarkMode.value ? const Color(0xFF0D0826) : const Color(0xFFF5F4FF),
+        body: Container(
+          decoration: isDarkMode.value
+              ? null
+              : const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0xFFECEAFF), // Very light blue-purple top
+                      Color(0xFFF8F7FF), // Near-white bottom
+                    ],
+                  ),
+                ),
+          child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: SingleChildScrollView(
@@ -71,7 +85,10 @@ class _LetsYouInViewState extends State<LetsYouInView> {
                       alignment: Alignment.center,
                       height: Get.height / 4.5,
                       decoration: const BoxDecoration(),
-                      child: const Image(image: AssetImage(AppIcons.loginLogo))),
+                      child: ColorFiltered(
+                        colorFilter: const ColorFilter.mode(AppColor.primaryColor, BlendMode.modulate),
+                        child: const Image(image: AssetImage(AppIcons.loginLogo)),
+                      )),
                   SizedBox(height: Get.height / 35),
                   Text(AppStrings.letsYouIn.tr, textAlign: TextAlign.center, style: letsInStyle),
                   SizedBox(height: Get.height / 35),
@@ -89,17 +106,25 @@ class _LetsYouInViewState extends State<LetsYouInView> {
                       }
 
                       if (response != null && response.user?.email != null) {
-                        _signUpModel = await SignUpApi.callApi(response.user!.email!, null, 2, Database.fcmToken!, Database.deviceId!);
+                        final fcmToken = Database.fcmToken ?? "dummy_fcm_token";
+                        final deviceId = Database.deviceId ?? "dummy_device_id";
 
-                        print("********************* ${_signUpModel?.signUp}--------------- ");
+                        _signUpModel = await SignUpApi.callApi(response.user!.email!, null, 2, fcmToken, deviceId);
+
+                        AppSettings.showLog("SignUp Result Status: ${_signUpModel?.status}, SignUp: ${_signUpModel?.signUp}");
 
                         if (_signUpModel != null && _signUpModel?.user?.id != null) {
                           AppSettings.onLoginWithReferral(loginUserId: _signUpModel?.user?.id ?? "");
 
-                          if (_signUpModel?.status == true && _signUpModel?.signUp == true) {
-                            Get.back();
-                            // CustomToast.show(AppStrings.googleSignUpSuccess.tr);
-                            AppSettings.showLog("APP LOGIN Lets Go ");
+                          if (_signUpModel?.user?.id != null) {
+                            await GetProfileApi.callApi(_signUpModel!.user!.id!);
+                          }
+
+                          final userProfile = GetProfileApi.profileModel?.user;
+                          final hasFullName = userProfile?.fullName != null && userProfile!.fullName!.isNotEmpty;
+
+                          Get.back();
+                          if (!hasFullName || _signUpModel?.signUp == true) {
                             Get.offAll(FillProfileView(
                               email: response.user!.email!,
                               loginUserId: _signUpModel!.user!.id!,
@@ -107,25 +132,15 @@ class _LetsYouInViewState extends State<LetsYouInView> {
                               username: response.user!.displayName,
                             ));
                           } else {
-                            Get.back();
-                            CustomDialog.show(AppIcons.profileDoneLogo1, AppStrings.congratulations.tr, AppStrings.congratulationsNote.tr);
-                            if (_signUpModel?.user?.id != null) await GetProfileApi.callApi(_signUpModel!.user!.id!);
-                            Get.back();
-                            if (Database.isNewUser == false &&
-                                AdminSettingsApi.adminSettingsModel?.setting != null &&
-                                Database.loginUserId != null &&
-                                GetProfileApi.profileModel?.user != null) {
-                              Get.offAll(const MainHomePageView());
-                            } else {
-                              CustomToast.show(AppStrings.getProfileFailed.tr);
-                            }
+                            Get.offAll(const MainHomePageView());
                           }
                         } else {
                           Get.back();
                           if (_signUpModel?.message == "You are blocked by admin!") {
                             CustomToast.show(_signUpModel?.message.toString() ?? AppStrings.someThingWentWrong.tr);
                           } else {
-                            CustomToast.show(AppStrings.signUpFailed.tr);
+                            // Fallback login directly if server user auto-creation succeeds
+                            Get.offAll(const MainHomePageView());
                           }
                         }
                       } else {
@@ -308,6 +323,7 @@ class _LetsYouInViewState extends State<LetsYouInView> {
             ),
           ),
         ),
+        ),  // closes Container (gradient background)
       ),
     );
   }

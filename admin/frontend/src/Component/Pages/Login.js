@@ -95,10 +95,27 @@ const Login = (props) => {
     <>
 
       <div className="d-flex overflow-hidden" style={{ height: "100vh" }}>
-        <div className="d-lg-block d-none col-lg-7 col-xl-6 p-0 h-100">
-          <img src={LoginImg} alt="Login" className="w-100 h-100" style={{ objectFit: "cover" }} />
+        <div className="d-lg-flex d-none col-lg-7 col-xl-6 p-5 h-100 flex-column justify-content-between align-items-start" style={{
+          background: "linear-gradient(135deg, #181136 0%, #2B1D6E 50%, #5A3EFE 100%)",
+          color: "#ffffff"
+        }}>
+          <div>
+            <div className="d-flex align-items-center gap-3 mb-5">
+              <img src={Logo} alt="YouPeak" height={55} width={55} />
+              <h1 className="fw-bold m-0" style={{ fontSize: "2.2rem", letterSpacing: "0.5px" }}>YouPeak</h1>
+            </div>
+            <h2 className="fw-bold mt-5" style={{ fontSize: "2.6rem", lineHeight: "1.2" }}>
+              Control Center & Platform Management
+            </h2>
+            <p style={{ opacity: 0.85, fontSize: "1.15rem", maxWidth: "480px", marginTop: "1.2rem" }}>
+              Manage users, live video broadcasts, monetization rewards, coin transactions, and app settings dynamically on YouPeak.
+            </p>
+          </div>
+          <div style={{ opacity: 0.7, fontSize: "0.95rem" }}>
+            © {new Date().getFullYear()} YouPeak Platform. All rights reserved.
+          </div>
         </div>
-        <div className="col-12 col-lg-5 col-xl-6 h-100 overflow-auto bg-white">
+        <div className="col-12 col-lg-5 col-xl-6 h-100 overflow-auto" style={{ backgroundColor: "#130E26", color: "#F0EEFF" }}>
           <div className="p-4 p-md-5 d-flex align-items-center justify-content-center min-vh-100">
             <div className="w-100 mx-auto" style={{ maxWidth: "440px" }}>
               <div>
@@ -110,8 +127,8 @@ const Login = (props) => {
                   width={75}
                 />
               </div>
-              <h2 className="fw-semibold">Login to your account</h2>
-              <p className="text-secondary">
+              <h2 className="fw-bold" style={{ color: "#FFFFFF" }}>Login to your account</h2>
+              <p style={{ color: "#B5A4FE", fontSize: "0.95rem" }}>
                 Let's connect, chat, and spark real connections. Enter your
                 credentials to continue your journey on {projectName}.
               </p>

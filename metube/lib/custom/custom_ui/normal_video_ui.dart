@@ -69,16 +69,18 @@ class NormalVideoUi extends StatelessWidget {
                 // ConvertedPathView(imageVideoPath: videoImage),
 
                 Positioned(
-                  right: 20,
-                  bottom: 15,
+                  right: 15,
+                  bottom: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(10), color: AppColor.black),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                      color: const Color(0xC0000000), // rgba(0,0,0,0.75) per Spec 2.E
+                    ),
                     child: Builder(builder: (context) {
-                      print("+++++++++++++++++$videoTime");
                       return Text(
                         CustomFormatTime.convertSecond(videoTime),
-                        style: GoogleFonts.urbanist(color: AppColor.white, fontSize: 11),
+                        style: GoogleFonts.urbanist(color: AppColor.white, fontSize: 11, fontWeight: FontWeight.bold),
                       );
                     }),
                   ),
@@ -87,7 +89,7 @@ class NormalVideoUi extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 5),
+        const SizedBox(height: 8),
         GestureDetector(
           onTap: () => Get.to(() => YourChannelView(loginUserId: Database.loginUserId!, channelId: channelId)),
           child: Container(
@@ -97,7 +99,7 @@ class NormalVideoUi extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(width: 10),
-                PreviewProfileImage(id: channelId, image: channelImage, size: 40, fit: BoxFit.cover),
+                PreviewProfileImage(id: channelId, image: channelImage, size: 36, fit: BoxFit.cover), // 36px per Spec 2.E
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
