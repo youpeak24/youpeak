@@ -7,11 +7,12 @@
       "destination": "/functions/backend/index.js"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/((?!api/|static/|manifest\\.json|favicon\\.ico|.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
   ]
 }
+
 
 
 
