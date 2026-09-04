@@ -1,7 +1,19 @@
 {
   "version": 2,
-  "buildCommand": "cd admin/frontend && npm install --legacy-peer-deps && npm run build",
-  "outputDirectory": "admin/frontend/build",
+  "name": "youpeak-platform",
+  "builds": [
+    {
+      "src": "admin/frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    },
+    {
+      "src": "functions/backend/index.js",
+      "use": "@vercel/node"
+    }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",
@@ -16,3 +28,4 @@
     }
   ]
 }
+
