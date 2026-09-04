@@ -21,45 +21,46 @@
     },
     {
       "src": "/static/(.*)",
-      "dest": "admin/frontend/static/$1"
+      "dest": "/static/$1"
     },
     {
       "src": "/manifest.json",
-      "dest": "admin/frontend/manifest.json"
+      "dest": "/manifest.json"
     },
     {
       "src": "/favicon.ico",
-      "dest": "admin/frontend/favicon.ico"
+      "dest": "/favicon.ico"
     },
     {
       "src": "/MetubeLogo.png",
-      "dest": "admin/frontend/MetubeLogo.png"
+      "dest": "/MetubeLogo.png"
     },
     {
       "src": "/YouPeakLogo.png",
-      "dest": "admin/frontend/YouPeakLogo.png"
+      "dest": "/YouPeakLogo.png"
     },
     {
       "src": "/logo192.png",
-      "dest": "admin/frontend/logo192.png"
+      "dest": "/logo192.png"
     },
     {
       "src": "/logo512.png",
-      "dest": "admin/frontend/logo512.png"
+      "dest": "/logo512.png"
     },
     {
       "src": "/robots.txt",
-      "dest": "admin/frontend/robots.txt"
+      "dest": "/robots.txt"
     },
     {
       "src": "/asset-manifest.json",
-      "dest": "admin/frontend/asset-manifest.json"
+      "dest": "/asset-manifest.json"
     },
     {
       "src": "/(.*)",
-      "dest": "admin/frontend/index.html"
+      "dest": "/index.html"
     }
   ]
 }
+
 
 
