@@ -5,24 +5,15 @@ const path = require("path");
 if (admin.apps.length === 0) {
   try {
     let serviceAccount;
-    const keyPaths = [
-      path.resolve(__dirname, "../serviceAccountKey.json"),
-      path.resolve(__dirname, "../../serviceAccountKey.json"),
-      path.resolve(__dirname, "../../../serviceAccountKey.json"),
-      path.resolve(process.cwd(), "functions/backend/serviceAccountKey.json"),
-      path.resolve(process.cwd(), "serviceAccountKey.json")
-    ];
-
-    for (const kp of keyPaths) {
-      if (fs.existsSync(kp)) {
-        try {
-          serviceAccount = JSON.parse(fs.readFileSync(kp, "utf8"));
-          break;
-        } catch (e) {}
-      }
+    try {
+      serviceAccount = require("../serviceAccountKey.json");
+    } catch (e) {
+      try {
+        serviceAccount = require("../../serviceAccountKey.json");
+      } catch (e2) {}
     }
 
-    if (serviceAccount) {
+    if (serviceAccount && serviceAccount.private_key) {
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         projectId: serviceAccount.project_id || "youpeak-9ff65"
@@ -36,6 +27,7 @@ if (admin.apps.length === 0) {
     console.error("Firebase Admin init error:", e);
   }
 }
+
 
 
 class FirestoreDbService {
