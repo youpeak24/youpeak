@@ -9,11 +9,11 @@
   "rewrites": [
     {
       "source": "/admin/(.*)",
-      "destination": "/api/admin/$1"
+      "destination": "/api"
     },
     {
       "source": "/client/(.*)",
-      "destination": "/api/client/$1"
+      "destination": "/api"
     },
     {
       "source": "/((?!admin/|client/|api/|static/|manifest\\.json|favicon\\.ico|logo192\\.png|logo512\\.png|robots\\.txt|asset-manifest\\.json|.*\\.[a-zA-Z0-9]+$).*)",
