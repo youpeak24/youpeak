@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '554624718564',
     projectId: 'youpeak-9ff65',
     storageBucket: 'youpeak-9ff65.firebasestorage.app',
-    iosBundleId: 'com.live.metube',
+    iosBundleId: 'com.live.youpeak',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

@@ -10,7 +10,7 @@
   "hosting": [
     {
       "target": "app",
-      "public": "metube/build/web",
+      "public": "youpeak/build/web",
       "ignore": [
         "firebase.json",
         "**/.*",
