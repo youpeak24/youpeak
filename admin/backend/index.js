@@ -15,17 +15,29 @@ const cors = require("cors");
 app.use(cors({ origin: true, credentials: true }));
 app.options("*", cors());
 
-// Safe Body Parser for Vercel
+// Safe Body Parser for Vercel Serverless Function Bridge
 app.use((req, res, next) => {
-  if (req.body && typeof req.body === "string") {
-    try {
-      req.body = JSON.parse(req.body);
-    } catch (e) {}
+  if (req.body !== undefined && req.body !== null) {
+    if (typeof req.body === "string") {
+      try {
+        req.body = JSON.parse(req.body);
+      } catch (e) {}
+    }
+    return next();
   }
-  next();
+  express.json({ limit: "50mb" })(req, res, (err) => {
+    next();
+  });
 });
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+app.use((req, res, next) => {
+  if (req.body && typeof req.body === "object") {
+    return next();
+  }
+  express.urlencoded({ limit: "50mb", extended: true })(req, res, (err) => {
+    next();
+  });
+});
 
 //logging middleware
 var logger = require("morgan");
