@@ -4,33 +4,125 @@ const path = require("path");
 
 if (admin.apps.length === 0) {
   try {
-    // Check for local serviceAccountKey.json first (local development)
-    const serviceAccountPath = path.join(__dirname, "..", "..", "serviceAccountKey.json");
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = require(serviceAccountPath);
+    let serviceAccount;
+    try {
+      serviceAccount = require("../serviceAccountKey.json");
+    } catch (e) {
+      try {
+        serviceAccount = require("../../serviceAccountKey.json");
+      } catch (e2) {}
+    }
+
+    if (serviceAccount && serviceAccount.private_key) {
+      const formattedPrivateKey = serviceAccount.private_key.replace(/\\n/g, "\n");
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+        credential: admin.credential.cert({
+          ...serviceAccount,
+          private_key: formattedPrivateKey,
+        }),
+        projectId: serviceAccount.project_id || "youpeak-9ff65",
       });
-      console.log("🔑 Firebase Admin initialized with serviceAccountKey.json");
-    } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-      // Use env variable path
-      admin.initializeApp();
-      console.log("🔥 Firebase Admin initialized via GOOGLE_APPLICATION_CREDENTIALS");
     } else {
-      // Try initializing with project ID fallback
+
       admin.initializeApp({
-        projectId: process.env.FIREBASE_PROJECT_ID || "youpeak-9ff65",
+        projectId: process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT || "youpeak-9ff65"
       });
-      console.log("🔥 Firebase Admin initialized with Project ID: youpeak-9ff65");
     }
   } catch (e) {
-    console.log("Firebase Admin init note:", e.message);
+    console.error("Firebase Admin init error:", e);
   }
 }
+
+
+
+const os = require("os");
 
 class FirestoreDbService {
   constructor() {
     this.db = null;
+    this.localDbFile = path.join(os.tmpdir(), "youpeak_local_db.json");
+    this.ensureLocalDbFile();
+  }
+
+  ensureLocalDbFile() {
+    try {
+      if (!fs.existsSync(this.localDbFile)) {
+        fs.writeFileSync(this.localDbFile, JSON.stringify({}), "utf8");
+      }
+    } catch (e) {}
+  }
+
+
+  readLocalDb() {
+    try {
+      this.ensureLocalDbFile();
+      let localData = {};
+      try {
+        const content = fs.readFileSync(this.localDbFile, "utf8");
+        localData = JSON.parse(content || "{}");
+      } catch (e) {}
+
+      try {
+        const candidates = [
+          path.resolve(__dirname, "../DB"),
+          path.resolve(__dirname, "../../DB"),
+          path.resolve(__dirname, "../../../DB"),
+          path.resolve(process.cwd(), "DB"),
+          path.resolve(process.cwd(), "admin/frontend/DB"),
+        ];
+        const dbDir = candidates.find((dir) => {
+          try {
+            return fs.existsSync(dir);
+          } catch (e) {
+            return false;
+          }
+        });
+        if (dbDir) {
+          const files = fs.readdirSync(dbDir);
+          for (const file of files) {
+            if (file.endsWith(".json") && file !== "translations.json" && file !== "languagefortranslations.json") {
+              const collectionName = file.replace(".json", "").toLowerCase().trim();
+              const normalizedName = this.normalizeCollectionName(collectionName);
+
+              if (!localData[normalizedName]) {
+                localData[normalizedName] = {};
+              }
+
+              try {
+                const filePath = path.join(dbDir, file);
+                const fileContent = fs.readFileSync(filePath, "utf8");
+                const jsonData = JSON.parse(fileContent);
+
+                const items = Array.isArray(jsonData) ? jsonData : [jsonData];
+                for (const item of items) {
+                  const docId = String(item._id?.$oid || item._id || item.id || Date.now());
+                  if (!localData[normalizedName][docId]) {
+                    const cleanDoc = JSON.parse(JSON.stringify(item));
+                    cleanDoc._id = docId;
+                    cleanDoc.id = docId;
+                    if (cleanDoc.createdAt?.$date) cleanDoc.createdAt = cleanDoc.createdAt.$date;
+                    if (cleanDoc.updatedAt?.$date) cleanDoc.updatedAt = cleanDoc.updatedAt.$date;
+                    localData[normalizedName][docId] = cleanDoc;
+                  }
+                }
+              } catch (e) {}
+            }
+          }
+        }
+      } catch (e) {}
+
+      return localData;
+    } catch (e) {
+      return {};
+    }
+  }
+
+
+  writeLocalDb(data) {
+    try {
+      this.ensureLocalDbFile();
+      fs.writeFileSync(this.localDbFile, JSON.stringify(data, null, 2), "utf8");
+    } catch (e) {}
   }
 
   getDb() {
@@ -38,220 +130,226 @@ class FirestoreDbService {
       try {
         this.db = admin.firestore();
         this.db.settings({ ignoreUndefinedProperties: true });
-      } catch (err) {
-        console.error("Firestore init error:", err.message);
-      }
+      } catch (err) {}
     }
     return this.db;
   }
 
-  /**
-   * Universal Firestore Query / Find
-   */
-  async find(collectionName, query = {}, options = {}) {
-    const db = this.getDb();
-    if (!db) return [];
+  normalizeCollectionName(name) {
+    if (!name) return name;
+    const lower = name.toString().toLowerCase().trim();
+    if (lower === "user") return "users";
+    if (lower === "video") return "videos";
+    if (lower === "short") return "shorts";
+    if (lower === "channel") return "channels";
+    return name;
+  }
 
+  async withTimeout(promiseMs, ms = 1500) {
+    let timer;
+    const timeoutPromise = new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error("GCP_TIMEOUT")), ms);
+    });
     try {
-      let ref = db.collection(collectionName);
+      const result = await Promise.race([promiseMs, timeoutPromise]);
+      clearTimeout(timer);
+      return result;
+    } catch (err) {
+      clearTimeout(timer);
+      throw err;
+    }
+  }
 
-      // Apply basic equality queries
+  async find(collectionName, query = {}, options = {}) {
+    const normalizedName = this.normalizeCollectionName(collectionName);
+    try {
+      const db = this.getDb();
+      if (db) {
+        let ref = db.collection(normalizedName);
+
+        if (query && typeof query === "object" && !Array.isArray(query)) {
+          Object.keys(query).forEach((key) => {
+            if (query[key] !== undefined && query[key] !== null) {
+              ref = ref.where(key, "==", query[key]);
+            }
+          });
+        }
+
+        if (options.sort && typeof options.sort === "object" && !Array.isArray(options.sort)) {
+          Object.keys(options.sort).forEach((key) => {
+            const dir = options.sort[key] === -1 ? "desc" : "asc";
+            try {
+              ref = ref.orderBy(key, dir);
+            } catch (e) {}
+          });
+        }
+
+        if (options.limit && typeof options.limit === "number") {
+          ref = ref.limit(options.limit);
+        }
+
+        const snapshot = await this.withTimeout(ref.get(), 1500);
+        const results = [];
+        snapshot.forEach((doc) => {
+          results.push({ _id: doc.id, id: doc.id, ...doc.data() });
+        });
+
+        return results;
+      }
+    } catch (err) {
+      console.warn(`Firestore query warning for ${normalizedName}:`, err.message);
+    }
+
+    // Instant local JSON fallback
+    const localData = this.readLocalDb();
+    const collection = localData[normalizedName] || {};
+    let results = Object.values(collection);
+
+    if (query && typeof query === "object" && !Array.isArray(query)) {
       Object.keys(query).forEach((key) => {
         if (query[key] !== undefined && query[key] !== null) {
-          ref = ref.where(key, "==", query[key]);
+          results = results.filter((item) => item[key] === query[key]);
         }
       });
-
-      if (options.sort) {
-        Object.keys(options.sort).forEach((key) => {
-          const dir = options.sort[key] === -1 ? "desc" : "asc";
-          ref = ref.orderBy(key, dir);
-        });
-      }
-
-      if (options.limit) {
-        ref = ref.limit(options.limit);
-      }
-
-      const snapshot = await ref.get();
-      const results = [];
-      snapshot.forEach((doc) => {
-        results.push({ _id: doc.id, id: doc.id, ...doc.data() });
-      });
-
-      return results;
-    } catch (err) {
-      console.warn(`Firestore find error for collection '${collectionName}':`, err.message);
-      return [];
     }
-  }
 
-  /**
-   * Find One Document
-   */
-  async findOne(collectionName, query = {}) {
-    const results = await this.find(collectionName, query, { limit: 1 });
-    return results.length > 0 ? results[0] : null;
-  }
-
-  /**
-   * Find By ID
-   */
-  async findById(collectionName, id) {
-    const db = this.getDb();
-    if (!db || !id) return null;
-
-    try {
-      const doc = await db.collection(collectionName).doc(String(id)).get();
-      if (!doc.exists) return null;
-      return { _id: doc.id, id: doc.id, ...doc.data() };
-    } catch (err) {
-      console.warn(`Firestore findById error for ${collectionName}/${id}:`, err.message);
-      return null;
+    if (options.limit && typeof options.limit === "number") {
+      results = results.slice(0, options.limit);
     }
+
+    return results;
   }
 
-  /**
-   * Create Document
-   */
-  async create(collectionName, data, customId = null) {
-    const db = this.getDb();
-    if (!db) return null;
-
-    const cleanData = JSON.parse(JSON.stringify(data));
-    cleanData.createdAt = cleanData.createdAt || new Date().toISOString();
-    cleanData.updatedAt = new Date().toISOString();
-
-    try {
-      let docRef;
-      if (customId) {
-        docRef = db.collection(collectionName).doc(String(customId));
-        await docRef.set(cleanData, { merge: true });
-      } else {
-        docRef = await db.collection(collectionName).add(cleanData);
-      }
-
-      const doc = await docRef.get();
-      return { _id: doc.id, id: doc.id, ...doc.data() };
-    } catch (err) {
-      console.warn(`Firestore create error for ${collectionName}:`, err.message);
-      return { _id: customId || "temp_id", id: customId || "temp_id", ...cleanData };
-    }
-  }
-
-  /**
-   * Update Document
-   */
-  async update(collectionName, id, data) {
-    const db = this.getDb();
-    if (!db || !id) return null;
-
-    const cleanData = JSON.parse(JSON.stringify(data));
-    cleanData.updatedAt = new Date().toISOString();
-
-    try {
-      await db.collection(collectionName).doc(String(id)).set(cleanData, { merge: true });
-      return this.findById(collectionName, id);
-    } catch (err) {
-      console.warn(`Firestore update error for ${collectionName}/${id}:`, err.message);
-      return { _id: id, id: id, ...cleanData };
-    }
-  }
-
-  /**
-   * Delete Document
-   */
-  async delete(collectionName, id) {
-    const db = this.getDb();
-    if (!db || !id) return false;
-
-    try {
-      await db.collection(collectionName).doc(String(id)).delete();
-      return true;
-    } catch (err) {
-      console.warn(`Firestore delete error for ${collectionName}/${id}:`, err.message);
-      return false;
-    }
-  }
-
-  /**
-   * Count Documents
-   */
   async count(collectionName, query = {}) {
     const results = await this.find(collectionName, query);
     return results.length;
   }
 
-  /**
-   * Seed Local DB JSON files into Firebase Firestore
-   */
-  async seedDefaultData() {
-    const db = this.getDb();
-    if (!db) return;
+  async countDocuments(collectionName, query = {}) {
+    return await this.count(collectionName, query);
+  }
 
-    const dbDir = path.join(__dirname, "..", "..", "DB");
-    if (!fs.existsSync(dbDir)) return;
+  async findOne(collectionName, query = {}) {
+    const results = await this.find(collectionName, query, { limit: 1 });
+    return results.length > 0 ? results[0] : null;
+  }
 
-    const seedFiles = [
-      { file: "settings.json", collection: "settings" },
-      { file: "adrewards.json", collection: "adrewards" },
-      { file: "advertises.json", collection: "advertises" },
-      { file: "currencies.json", collection: "currencies" },
-      { file: "dailyrewards.json", collection: "dailyrewards" },
-      { file: "translations.json", collection: "translations" },
-    ];
-
-    for (const item of seedFiles) {
-      try {
-        const filePath = path.join(dbDir, item.file);
-        if (fs.existsSync(filePath)) {
-          const content = fs.readFileSync(filePath, "utf8");
-          const jsonData = JSON.parse(content);
-
-          const snapshot = await db.collection(item.collection).limit(1).get();
-          if (snapshot.empty) {
-            if (Array.isArray(jsonData)) {
-              for (const docData of jsonData) {
-                const docId = docData._id?.$oid || docData._id || docData.id;
-                await this.create(item.collection, docData, docId);
-              }
-            } else {
-              const docId = jsonData._id?.$oid || jsonData._id || "default";
-              await this.create(item.collection, jsonData, docId);
-            }
-            console.log(`✅ Seeded ${item.collection} into Firebase Firestore`);
-          }
-        }
-      } catch (err) {
-        console.error(`Error seeding ${item.collection}:`, err.message);
-      }
-    }
-
-    // Seed default Admin credentials if no admin exists
+  async findById(collectionName, id) {
+    if (!id) return null;
+    const normalizedName = this.normalizeCollectionName(collectionName);
     try {
-      const Cryptr = require("cryptr");
-      const cryptr = new Cryptr("myTotallySecretKey");
-
-      const adminSnapshot = await db.collection("admins").limit(1).get();
-      if (adminSnapshot.empty) {
-        const encryptedPassword = cryptr.encrypt("12345678");
-        await this.create(
-          "admins",
-          {
-            name: "Super Admin",
-            email: "youpeak24@gmail.com",
-            password: encryptedPassword,
-            purchaseCode: "LIC-DEFAULT",
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          "admin_default",
-        );
-        console.log("👑 Default Admin created: youpeak24@gmail.com / 12345678");
+      const db = this.getDb();
+      if (db) {
+        const doc = await this.withTimeout(db.collection(normalizedName).doc(String(id)).get(), 1500);
+        if (doc.exists) {
+          return { _id: doc.id, id: doc.id, ...doc.data() };
+        }
       }
-    } catch (e) {
-      console.error("Admin seeding note:", e.message);
+    } catch (err) {}
+
+    const localData = this.readLocalDb();
+    const collection = localData[normalizedName] || {};
+    return collection[String(id)] || null;
+  }
+
+  async create(collectionName, data, customId = null) {
+    const normalizedName = this.normalizeCollectionName(collectionName);
+    const cleanData = JSON.parse(JSON.stringify(data));
+    cleanData.createdAt = cleanData.createdAt || new Date().toISOString();
+    cleanData.updatedAt = new Date().toISOString();
+    const docId = String(customId || cleanData._id || cleanData.id || Date.now());
+    cleanData._id = docId;
+    cleanData.id = docId;
+
+    try {
+      const db = this.getDb();
+      if (db) {
+        const docRef = db.collection(normalizedName).doc(docId);
+        await this.withTimeout(docRef.set(cleanData, { merge: true }), 1500);
+      }
+    } catch (err) {}
+
+    const localData = this.readLocalDb();
+    if (!localData[normalizedName]) localData[normalizedName] = {};
+    localData[normalizedName][docId] = cleanData;
+    this.writeLocalDb(localData);
+
+    return cleanData;
+  }
+
+  async update(collectionName, id, updateData) {
+    if (!id) return null;
+    const normalizedName = this.normalizeCollectionName(collectionName);
+    const cleanData = JSON.parse(JSON.stringify(updateData));
+    cleanData.updatedAt = new Date().toISOString();
+
+    try {
+      const db = this.getDb();
+      if (db) {
+        const docRef = db.collection(normalizedName).doc(String(id));
+        await this.withTimeout(docRef.set(cleanData, { merge: true }), 1500);
+      }
+    } catch (err) {}
+
+    const localData = this.readLocalDb();
+    if (!localData[normalizedName]) localData[normalizedName] = {};
+    const existing = localData[normalizedName][String(id)] || {};
+    const merged = { ...existing, ...cleanData, _id: String(id), id: String(id) };
+    localData[normalizedName][String(id)] = merged;
+    this.writeLocalDb(localData);
+
+    return merged;
+  }
+
+  async delete(collectionName, id) {
+    if (!id) return false;
+    const normalizedName = this.normalizeCollectionName(collectionName);
+    try {
+      const db = this.getDb();
+      if (db) {
+        await this.withTimeout(db.collection(normalizedName).doc(String(id)).delete(), 1500);
+      }
+    } catch (err) {}
+
+    const localData = this.readLocalDb();
+    if (localData[normalizedName] && localData[normalizedName][String(id)]) {
+      delete localData[normalizedName][String(id)];
+      this.writeLocalDb(localData);
     }
+    return true;
+  }
+
+  async seedDefaultData() {
+    try {
+      const defaultLanguage = await this.findOne("languages", { isDefault: true });
+      if (!defaultLanguage) {
+        await this.create(
+          "languages",
+          {
+            _id: "lang_default_en",
+            name: "English",
+            code: "en",
+            isDefault: true,
+          },
+          "lang_default_en"
+        );
+      }
+
+      const defaultCurrency = await this.findOne("currencies", { isDefault: true });
+      if (!defaultCurrency) {
+        await this.create(
+          "currencies",
+          {
+            _id: "currency_default",
+            name: "Indian Rupee",
+            symbol: "₹",
+            currencyCode: "INR",
+            isDefault: true,
+          },
+          "currency_default"
+        );
+      }
+    } catch (err) {}
   }
 }
 

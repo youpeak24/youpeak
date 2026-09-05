@@ -167,20 +167,24 @@ class FirestoreDbService {
       if (db) {
         let ref = db.collection(normalizedName);
 
-        Object.keys(query).forEach((key) => {
-          if (query[key] !== undefined && query[key] !== null) {
-            ref = ref.where(key, "==", query[key]);
-          }
-        });
-
-        if (options.sort) {
-          Object.keys(options.sort).forEach((key) => {
-            const dir = options.sort[key] === -1 ? "desc" : "asc";
-            ref = ref.orderBy(key, dir);
+        if (query && typeof query === "object" && !Array.isArray(query)) {
+          Object.keys(query).forEach((key) => {
+            if (query[key] !== undefined && query[key] !== null) {
+              ref = ref.where(key, "==", query[key]);
+            }
           });
         }
 
-        if (options.limit) {
+        if (options.sort && typeof options.sort === "object" && !Array.isArray(options.sort)) {
+          Object.keys(options.sort).forEach((key) => {
+            const dir = options.sort[key] === -1 ? "desc" : "asc";
+            try {
+              ref = ref.orderBy(key, dir);
+            } catch (e) {}
+          });
+        }
+
+        if (options.limit && typeof options.limit === "number") {
           ref = ref.limit(options.limit);
         }
 
@@ -192,20 +196,24 @@ class FirestoreDbService {
 
         return results;
       }
-    } catch (err) {}
+    } catch (err) {
+      console.warn(`Firestore query warning for ${normalizedName}:`, err.message);
+    }
 
     // Instant local JSON fallback
     const localData = this.readLocalDb();
     const collection = localData[normalizedName] || {};
     let results = Object.values(collection);
 
-    Object.keys(query).forEach((key) => {
-      if (query[key] !== undefined && query[key] !== null) {
-        results = results.filter((item) => item[key] === query[key]);
-      }
-    });
+    if (query && typeof query === "object" && !Array.isArray(query)) {
+      Object.keys(query).forEach((key) => {
+        if (query[key] !== undefined && query[key] !== null) {
+          results = results.filter((item) => item[key] === query[key]);
+        }
+      });
+    }
 
-    if (options.limit) {
+    if (options.limit && typeof options.limit === "number") {
       results = results.slice(0, options.limit);
     }
 
