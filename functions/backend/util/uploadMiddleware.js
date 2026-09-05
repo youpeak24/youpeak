@@ -25,10 +25,14 @@ const generateFileName = (file) => {
   return `${Date.now()}_${shortName}${ext}`;
 };
 
-const localStoragePath = path.join(__dirname, "..", "uploads");
-if (!fs.existsSync(localStoragePath)) {
-  fs.mkdirSync(localStoragePath, { recursive: true });
-}
+const os = require("os");
+const localStoragePath = path.join(os.tmpdir(), "uploads");
+try {
+  if (!fs.existsSync(localStoragePath)) {
+    fs.mkdirSync(localStoragePath, { recursive: true });
+  }
+} catch (e) {}
+
 
 const getActiveStorage = () => {
   const settings = global.settingJSON || {};
