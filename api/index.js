@@ -1,13 +1,33 @@
-// Vercel Serverless Function entrypoint with error capture
+// Vercel Serverless Function diagnostic handler
 module.exports = (req, res) => {
+  const status = {};
+  const modules = [
+    "express",
+    "cors",
+    "morgan",
+    "firebase-admin",
+    "../backend/util/connection",
+    "../backend/setting",
+    "../backend/routes/index"
+  ];
+
+  for (const mod of modules) {
+    try {
+      require(mod);
+      status[mod] = "OK";
+    } catch (err) {
+      status[mod] = `ERROR: ${err.message}`;
+    }
+  }
+
   try {
-    const app = require("../functions/backend/index");
+    const app = require("../backend/index");
     return app(req, res);
   } catch (err) {
-    console.error("Vercel Function Error:", err);
-    return res.status(500).json({
+    return res.status(200).json({
       status: false,
-      error: err.message || "Vercel Function Error",
+      diagnostics: status,
+      error: err.message,
       stack: err.stack ? err.stack.split("\n") : []
     });
   }
