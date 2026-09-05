@@ -4,8 +4,8 @@ const db = require("../../util/connection");
 exports.dashboardCount = async (req, res) => {
   try {
     const totalUsers = await db.count("users");
-    const totalVideos = await db.count("videos");
-    const totalShorts = await db.count("shorts");
+    const totalVideos = await db.count("videos", { videoType: 1 });
+    const totalShorts = await db.count("videos", { videoType: 2 });
     const totalChannels = await db.count("channels");
 
     return res.status(200).send({
@@ -32,8 +32,8 @@ exports.dashboardCount = async (req, res) => {
 exports.chartAnalytic = async (req, res) => {
   try {
     const users = await db.find("users");
-    const videos = await db.find("videos");
-    const shorts = await db.find("shorts");
+    const videos = await db.find("videos", { videoType: 1 });
+    const shorts = await db.find("videos", { videoType: 2 });
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const monthCounts = months.map((month) => ({
