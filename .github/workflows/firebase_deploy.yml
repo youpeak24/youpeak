@@ -1,10 +1,17 @@
-name: YouPeak - Auto Deploy to Firebase
+name: YouPeak - Manual Deploy to Firebase
 
 on:
-  push:
-    branches:
-      - main
-      - master
+  workflow_dispatch:
+    inputs:
+      deploy_target:
+        description: 'What to deploy?'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - both
+          - admin_only
+          - app_only
 
 jobs:
   # ============================================================
@@ -13,6 +20,7 @@ jobs:
   deploy_admin:
     name: Build & Deploy Admin Panel
     runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.deploy_target == 'both' || github.event.inputs.deploy_target == 'admin_only' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -43,6 +51,7 @@ jobs:
   deploy_app:
     name: Build & Deploy Flutter Web App
     runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.deploy_target == 'both' || github.event.inputs.deploy_target == 'app_only' }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
