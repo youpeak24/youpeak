@@ -1,5 +1,6 @@
 //dns resolution fix for Node 18+ & Firebase Cloud Functions
-const dns = require("node:dns");
+const dns = require("dns");
+
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder("ipv4first");
 }

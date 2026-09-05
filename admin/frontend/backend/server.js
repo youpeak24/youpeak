@@ -3,7 +3,8 @@
 // Run from: functions/ directory with: node backend/server.js
 
 //dns resolution fix for Node 18+
-const dns = require("node:dns");
+const dns = require("dns");
+
 if (dns.setDefaultResultOrder) {
   dns.setDefaultResultOrder("ipv4first");
 }
