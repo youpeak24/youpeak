@@ -8,7 +8,7 @@ const LiveView = require("./models/liveView.model");
 const moment = require("moment-timezone");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("./util/mongooseShim");
 
 io.on("connect", async (socket) => {
   console.log("Socket Connection done: ", socket.id);

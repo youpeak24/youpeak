@@ -1,6 +1,6 @@
 const { LOGIN_TYPE, CHANNEL_TYPE } = require("../types/constant");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const userSchema = new mongoose.Schema(
   {

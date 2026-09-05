@@ -5,7 +5,7 @@ const { COMMENT_TYPE } = require("../types/constant");
 const { SCHEDULE_TYPE } = require("../types/constant");
 const { VIDEO_PRIVACY_TYPE } = require("../types/constant");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const videoSchema = new mongoose.Schema(
   {

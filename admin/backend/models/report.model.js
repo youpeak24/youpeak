@@ -1,6 +1,6 @@
 const { REPORT_TYPE } = require("../types/constant");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const reportSchema = new mongoose.Schema(
   {

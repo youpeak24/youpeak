@@ -34,7 +34,7 @@ const PlaybackSession = require("../../models/playbackSession.model");
 const AdReward = require("../../models/adRewardCoin.model");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../../util/mongooseShim");
 
 //uuid
 const uuid = require("uuid");

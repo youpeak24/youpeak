@@ -1,5 +1,5 @@
 //Mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 //Setting Schema
 const settingSchema = new mongoose.Schema(

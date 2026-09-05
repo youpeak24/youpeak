@@ -3,7 +3,7 @@ const AdRewardCoin = require("../../models/adRewardCoin.model");
 //import models
 const User = require("../../models/user.model");
 
-const mongoose = require("mongoose");
+const mongoose = require("../../util/mongooseShim");
 
 // get ad reward coin by user
 exports.getAdRewardByUser = async (req, res) => {

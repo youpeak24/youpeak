@@ -6,7 +6,7 @@ const History = require("../../models/history.model");
 const CoinPlanHistory = require("../../models/coinplanHistory.model");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../../util/mongooseShim");
 
 const moment = require("moment");
 

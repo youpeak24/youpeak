@@ -14,7 +14,7 @@ const { generateHistoryUniqueId } = require("../../util/generateHistoryUniqueId"
 const admin = require("../../util/privateKey");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../../util/mongooseShim");
 
 const dayjs = require("dayjs");
 
