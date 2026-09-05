@@ -15,18 +15,33 @@ const cors = require("cors");
 app.use(cors({ origin: true, credentials: true }));
 app.options("*", cors());
 
+// Safe Body Parsing for Vercel Serverless HTTP Bridge
 app.use((req, res, next) => {
-  if (req.body && typeof req.body === "object" && Object.keys(req.body).length > 0) {
-    return next();
+  if (req.body) {
+    if (typeof req.body === "string") {
+      try {
+        req.body = JSON.parse(req.body);
+        return next();
+      } catch (e) {}
+    } else if (typeof req.body === "object" && Object.keys(req.body).length > 0) {
+      return next();
+    }
   }
-  express.json({ limit: "50mb" })(req, res, next);
+  express.json({ limit: "50mb" })(req, res, (err) => {
+    if (err) {
+      req.body = req.body || {};
+    }
+    next();
+  });
 });
 
 app.use((req, res, next) => {
   if (req.body && typeof req.body === "object" && Object.keys(req.body).length > 0) {
     return next();
   }
-  express.urlencoded({ limit: "50mb", extended: true })(req, res, next);
+  express.urlencoded({ limit: "50mb", extended: true })(req, res, (err) => {
+    next();
+  });
 });
 
 //logging middleware
