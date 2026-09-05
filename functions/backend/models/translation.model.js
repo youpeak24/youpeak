@@ -1,5 +1,5 @@
 // models/translation.model.js
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const translationSchema = new mongoose.Schema(
   {

@@ -5,7 +5,7 @@ const User = require("../../models/user.model");
 const Video = require("../../models/video.model");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 //day.js
 const dayjs = require("dayjs");

@@ -10,7 +10,7 @@ const Notification = require("../../models/notification.model");
 const { generateHistoryUniqueId } = require("../../util/generateHistoryUniqueId");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../../util/mongooseShim");
 
 //private key
 const admin = require("../../util/privateKey");

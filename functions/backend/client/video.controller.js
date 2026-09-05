@@ -27,7 +27,7 @@ const admin = require("../../util/privateKey");
 const moment = require("moment");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 //day.js
 const dayjs = require("dayjs");

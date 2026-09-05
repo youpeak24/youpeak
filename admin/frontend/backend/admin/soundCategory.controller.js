@@ -4,7 +4,7 @@ const SoundList = require("../../models/soundsList.model");
 //deleteFromStorage
 const { deleteFromStorage } = require("../../util/storageHelper");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 //create soundCategory
 exports.create = async (req, res) => {

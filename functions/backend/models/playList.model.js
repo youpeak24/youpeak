@@ -1,6 +1,6 @@
 const { PLAYLIST_TYPE } = require("../types/constant");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const playListSchema = new mongoose.Schema(
   {

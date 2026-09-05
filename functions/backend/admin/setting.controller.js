@@ -6,7 +6,7 @@ const { deleteFromStorage } = require("../../util/storageHelper");
 
 const Joi = require("joi");
 const axios = require("axios");
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const sha256Regex = /^([A-F0-9]{2}:){31}[A-F0-9]{2}$/;
 const androidAssetLinksSchema = Joi.array()

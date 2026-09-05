@@ -8,7 +8,7 @@ const History = require("../../models/history.model");
 //moment
 const moment = require("moment");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const { generateHistoryUniqueId } = require("../../util/generateHistoryUniqueId");
 

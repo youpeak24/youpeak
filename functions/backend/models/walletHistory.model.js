@@ -1,6 +1,6 @@
 const { WALLET_HISTORY_TYPE } = require("../types/constant");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const walletHistorySchema = new mongoose.Schema(
   {

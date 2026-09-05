@@ -1,6 +1,6 @@
 const { HISTORY_TYPE } = require("../types/constant");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const historySchema = new mongoose.Schema(
   {

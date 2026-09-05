@@ -6,7 +6,7 @@ const Video = require("../../models/video.model");
 const WalletHistory = require("../../models/walletHistory.model");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 //generateHistoryUniqueId
 const { generateHistoryUniqueId } = require("../../util/generateHistoryUniqueId");

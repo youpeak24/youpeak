@@ -1,6 +1,6 @@
 const VideoComment = require("../../models/videoComment.model");
 
-const mongoose = require("mongoose");
+const mongoose = require("../../util/mongooseShim");
 
 //import model
 const User = require("../../models/user.model");

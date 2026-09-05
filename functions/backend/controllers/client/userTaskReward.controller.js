@@ -2,7 +2,7 @@ const User = require("../../models/user.model");
 const Setting = require("../../models/setting.model");
 const History = require("../../models/history.model");
 const { generateHistoryUniqueId } = require("../../util/generateHistoryUniqueId");
-const mongoose = require("mongoose");
+const mongoose = require("../../util/mongooseShim");
 
 // Helper to format today's date in YYYY-MM-DD (Asia/Kolkata timezone)
 const getTodayDateStr = () => {

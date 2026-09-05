@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const { MONETIZATIONREQUEST_STATUS } = require("../types/constant");
 

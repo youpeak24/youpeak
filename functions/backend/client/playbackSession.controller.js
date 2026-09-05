@@ -4,7 +4,7 @@ const PlaybackSession = require("../../models/playbackSession.model");
 const User = require("../../models/user.model");
 const Video = require("../../models/video.model");
 
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 const dayjs = require("dayjs");
 

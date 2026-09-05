@@ -13,7 +13,7 @@ const admin = require("../../util/privateKey");
 const moment = require("moment-timezone");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../../util/mongooseShim");
 
 const { generateToken04 } = require("../../util/zegoAssistant");
 

@@ -7,7 +7,7 @@ const User = require("../../models/user.model");
 const dayjs = require("dayjs");
 
 //mongoose
-const mongoose = require("mongoose");
+const mongoose = require("../util/mongooseShim");
 
 //get notification list for that user
 exports.getNotificationList = async (req, res) => {
