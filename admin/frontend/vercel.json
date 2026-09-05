@@ -1,11 +1,20 @@
 {
   "rewrites": [
     {
-      "source": "/((?!api/|static/|manifest\\.json|favicon\\.ico|logo192\\.png|logo512\\.png|robots\\.txt|asset-manifest\\.json|.*\\.[a-zA-Z0-9]+$).*)",
+      "source": "/admin/:path*",
+      "destination": "/functions/backend/index.js"
+    },
+    {
+      "source": "/client/:path*",
+      "destination": "/functions/backend/index.js"
+    },
+    {
+      "source": "/((?!admin/|client/|static/|manifest\\.json|favicon\\.ico|logo192\\.png|logo512\\.png|robots\\.txt|asset-manifest\\.json|.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
   ]
 }
+
 
 
 
