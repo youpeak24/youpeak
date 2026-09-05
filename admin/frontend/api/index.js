@@ -1,4 +1,6 @@
 // Vercel Serverless Function entrypoint inside admin/frontend
 const app = require("../backend/index");
 
-module.exports = app;
+module.exports = (req, res) => {
+  return app(req, res);
+};

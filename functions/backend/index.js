@@ -63,9 +63,9 @@ global.updateSettingFile = (settingData) => {
   global.settingJSON = settingData;
 };
 
-
 const routes = require("./routes/index");
-app.use(routes);
+app.use("/", routes);
+app.use("/api", routes);
 
 app.get("/.well-known/assetlinks.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
