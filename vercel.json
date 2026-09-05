@@ -1,11 +1,7 @@
 {
+  "installCommand": "npm install --prefix admin/frontend",
   "buildCommand": "npm run build --prefix admin/frontend",
   "outputDirectory": "admin/frontend/build",
-  "functions": {
-    "api/**/*.js": {
-      "includeFiles": "functions/backend/**"
-    }
-  },
   "rewrites": [
     {
       "source": "/admin/(.*)",
