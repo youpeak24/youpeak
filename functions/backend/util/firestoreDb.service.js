@@ -14,11 +14,16 @@ if (admin.apps.length === 0) {
     }
 
     if (serviceAccount && serviceAccount.private_key) {
+      const formattedPrivateKey = serviceAccount.private_key.replace(/\\n/g, "\n");
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-        projectId: serviceAccount.project_id || "youpeak-9ff65"
+        credential: admin.credential.cert({
+          ...serviceAccount,
+          private_key: formattedPrivateKey,
+        }),
+        projectId: serviceAccount.project_id || "youpeak-9ff65",
       });
     } else {
+
       admin.initializeApp({
         projectId: process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT || "youpeak-9ff65"
       });
