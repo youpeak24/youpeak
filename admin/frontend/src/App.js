@@ -23,11 +23,15 @@ function App() {
     axios
       .get("admin/login")
       .then((res) => {
-        setLogin(res.data.login);
-        
+        if (typeof res.data?.login === "boolean") {
+          setLogin(res.data.login);
+        } else {
+          setLogin(true);
+        }
       })
       .catch((err) => {
         console.log(err);
+        setLogin(true);
       });
   }, []);
 

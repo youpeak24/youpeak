@@ -1,34 +1,18 @@
-// Vercel Serverless Function diagnostic handler inside admin/frontend/api
-module.exports = (req, res) => {
-  const status = {};
-  const modules = [
-    "express",
-    "cors",
-    "morgan",
-    "firebase-admin",
-    "../backend/util/connection",
-    "../backend/setting",
-    "../backend/routes/index"
-  ];
-
-  for (const mod of modules) {
-    try {
-      require(mod);
-      status[mod] = "OK";
-    } catch (err) {
-      status[mod] = `ERROR: ${err.message}`;
-    }
-  }
-
+// Vercel Serverless Function entrypoint inside admin/frontend
+let app;
+try {
+  app = require("../backend/index");
+} catch (e1) {
   try {
-    const app = require("../backend/index");
-    return app(req, res);
-  } catch (err) {
-    return res.status(200).json({
-      status: false,
-      diagnostics: status,
-      error: err.message,
-      stack: err.stack ? err.stack.split("\n") : []
-    });
+    app = require("../../functions/backend/index");
+  } catch (e2) {
+    console.error("Failed to load backend application in frontend/api:", e1, e2);
   }
+}
+
+module.exports = (req, res) => {
+  if (app) {
+    return app(req, res);
+  }
+  return res.status(500).json({ status: false, error: "Backend application failed to load" });
 };
