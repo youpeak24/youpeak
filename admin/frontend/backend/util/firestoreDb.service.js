@@ -51,54 +51,67 @@ class FirestoreDbService {
   readLocalDb() {
     try {
       this.ensureLocalDbFile();
-      const content = fs.readFileSync(this.localDbFile, "utf8");
-      const localData = JSON.parse(content || "{}");
+      let localData = {};
+      try {
+        const content = fs.readFileSync(this.localDbFile, "utf8");
+        localData = JSON.parse(content || "{}");
+      } catch (e) {}
 
-      const candidates = [
-        path.resolve(__dirname, "../../../DB"),
-        path.resolve(__dirname, "../../DB"),
-        path.resolve(process.cwd(), "DB"),
-        path.resolve(process.cwd(), "../DB"),
-      ];
-      const dbDir = candidates.find((dir) => fs.existsSync(dir));
-      if (dbDir) {
-        const files = fs.readdirSync(dbDir);
-        for (const file of files) {
-          if (file.endsWith(".json") && file !== "translations.json" && file !== "languagefortranslations.json") {
-            const collectionName = file.replace(".json", "").toLowerCase().trim();
-            const normalizedName = this.normalizeCollectionName(collectionName);
+      try {
+        const candidates = [
+          path.resolve(__dirname, "../DB"),
+          path.resolve(__dirname, "../../DB"),
+          path.resolve(__dirname, "../../../DB"),
+          path.resolve(process.cwd(), "DB"),
+          path.resolve(process.cwd(), "admin/frontend/DB"),
+        ];
+        const dbDir = candidates.find((dir) => {
+          try {
+            return fs.existsSync(dir);
+          } catch (e) {
+            return false;
+          }
+        });
+        if (dbDir) {
+          const files = fs.readdirSync(dbDir);
+          for (const file of files) {
+            if (file.endsWith(".json") && file !== "translations.json" && file !== "languagefortranslations.json") {
+              const collectionName = file.replace(".json", "").toLowerCase().trim();
+              const normalizedName = this.normalizeCollectionName(collectionName);
 
-            if (!localData[normalizedName]) {
-              localData[normalizedName] = {};
-            }
-
-            try {
-              const filePath = path.join(dbDir, file);
-              const fileContent = fs.readFileSync(filePath, "utf8");
-              const jsonData = JSON.parse(fileContent);
-
-              const items = Array.isArray(jsonData) ? jsonData : [jsonData];
-              for (const item of items) {
-                const docId = String(item._id?.$oid || item._id || item.id || Date.now());
-                if (!localData[normalizedName][docId]) {
-                  const cleanDoc = JSON.parse(JSON.stringify(item));
-                  cleanDoc._id = docId;
-                  cleanDoc.id = docId;
-                  if (cleanDoc.createdAt?.$date) cleanDoc.createdAt = cleanDoc.createdAt.$date;
-                  if (cleanDoc.updatedAt?.$date) cleanDoc.updatedAt = cleanDoc.updatedAt.$date;
-                  localData[normalizedName][docId] = cleanDoc;
-                }
+              if (!localData[normalizedName]) {
+                localData[normalizedName] = {};
               }
-            } catch (e) {}
+
+              try {
+                const filePath = path.join(dbDir, file);
+                const fileContent = fs.readFileSync(filePath, "utf8");
+                const jsonData = JSON.parse(fileContent);
+
+                const items = Array.isArray(jsonData) ? jsonData : [jsonData];
+                for (const item of items) {
+                  const docId = String(item._id?.$oid || item._id || item.id || Date.now());
+                  if (!localData[normalizedName][docId]) {
+                    const cleanDoc = JSON.parse(JSON.stringify(item));
+                    cleanDoc._id = docId;
+                    cleanDoc.id = docId;
+                    if (cleanDoc.createdAt?.$date) cleanDoc.createdAt = cleanDoc.createdAt.$date;
+                    if (cleanDoc.updatedAt?.$date) cleanDoc.updatedAt = cleanDoc.updatedAt.$date;
+                    localData[normalizedName][docId] = cleanDoc;
+                  }
+                }
+              } catch (e) {}
+            }
           }
         }
-      }
+      } catch (e) {}
 
       return localData;
     } catch (e) {
       return {};
     }
   }
+
 
   writeLocalDb(data) {
     try {
