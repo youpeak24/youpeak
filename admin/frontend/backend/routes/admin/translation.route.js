@@ -5,7 +5,7 @@ const localizationController = require("../../controllers/admin/translation.cont
 const checkAccessWithSecretKey = require("../../checkAccess");
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.use(checkAccessWithSecretKey());
 
@@ -24,6 +24,5 @@ router.get("/extractTranslationsCSV", localizationController.extractTranslations
 
 // get single Language's translations
 router.get("/harvestTranslations", localizationController.harvestTranslations);
-
 
 module.exports = router;
