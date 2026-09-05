@@ -37,30 +37,31 @@ exports.forgeLanguage = async (req, res) => {
   }
 };
 
+// get all languages (harvestLanguages)
 exports.harvestLanguages = async (req, res) => {
-  try {
-    let languages = [];
-    try {
-      languages = await db.find("languages", {});
-    } catch (e) {
-      console.warn("Firestore languages query note:", e.message);
-    }
+  const defaultLang = {
+    _id: "lang_en",
+    languageTitle: "English",
+    languageCode: "en",
+    localLanguageTitle: "English",
+    languageIcon: "https://youpeak-9ff65.web.app/logo.png",
+    isDefault: true,
+    isActive: true,
+    errorCount: 0,
+  };
 
+  try {
+    let languages = await db.find("languages", {});
+
+    // Seed default English language if empty
     if (!languages || languages.length === 0) {
-      const defaultLang = {
-        _id: "lang_en",
-        languageTitle: "English",
-        languageCode: "en",
-        localLanguageTitle: "English",
-        languageIcon: "https://youpeak-9ff65.web.app/logo.png",
-        isDefault: true,
-        isActive: true,
-        errorCount: 0,
-      };
       try {
-        await db.create("languages", defaultLang, "lang_en");
+        const createdLang = await db.create("languages", defaultLang, "lang_en");
+        if (createdLang) languages = [createdLang];
       } catch (e) {}
-      languages = [defaultLang];
+      if (!languages || languages.length === 0) {
+        languages = [defaultLang];
+      }
     }
 
     return res.status(200).json({
@@ -70,15 +71,13 @@ exports.harvestLanguages = async (req, res) => {
       data: languages,
     });
   } catch (error) {
-    const fallbackLang = [{
-      _id: "lang_en",
-      languageTitle: "English",
-      languageCode: "en",
-      localLanguageTitle: "English",
-      isDefault: true,
-      isActive: true,
-    }];
-    return res.status(200).json({ status: true, message: "Success", total: 1, data: fallbackLang });
+    console.error("Error harvesting languages:", error);
+    return res.status(200).json({
+      status: true,
+      message: "Languages fetched",
+      total: 1,
+      data: [defaultLang],
+    });
   }
 };
 

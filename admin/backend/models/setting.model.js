@@ -24,15 +24,15 @@ const settingSchema = new mongoose.Schema(
     durationOfShorts: { type: Number, default: 0 }, //that value always save in seconds
 
     minCoinForCashOut: { type: Number, default: 0 }, //min coin requried for convert coin to default currency i.e., 1000 coin = 1 $
-    maxAdPerDay: { type: Number, default: 1 },
+    maxAdPerDay: { type: Number, default: 20 },
 
     //Referral Setting
-    referralRewardCoins: { type: Number, default: 100 },
+    referralRewardCoins: { type: Number, default: 250 },
 
     //engagement setting
     watchingVideoRewardCoins: { type: Number, default: 100 },
-    commentingRewardCoins: { type: Number, default: 100 },
-    likeVideoRewardCoins: { type: Number, default: 100 },
+    commentingRewardCoins: { type: Number, default: 2 },
+    likeVideoRewardCoins: { type: Number, default: 5 },
 
     //loginReward setting
     loginRewardCoins: { type: Number, default: 100 },
@@ -89,7 +89,8 @@ const settingSchema = new mongoose.Schema(
     appleAppSiteAssociation: { type: mongoose.Schema.Types.Mixed, default: {} },
 
     // Coin to INR Dynamic Conversion & Daily Caps
-    coinToInrRate: { type: Number, default: 0.1 }, // e.g. 10 coins = 1 INR (0.1 INR per coin)
+    coinToInrRate: { type: Number, default: 0.01 }, // 100 coins = 1 INR (0.01 INR per coin)
+    dailyMaxEarningCapInCoins: { type: Number, default: 500 }, // 500 coins = ₹5 INR daily viewer cap
     dailyMaxCheckIns: { type: Number, default: 1 },
     dailyMaxLikes: { type: Number, default: 20 },
     dailyMaxComments: { type: Number, default: 10 },

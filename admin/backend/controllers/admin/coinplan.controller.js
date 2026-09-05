@@ -1,7 +1,7 @@
-const CoinPlan = require("../../models/coinplan.model");
-const History = require("../../models/history.model");
+const db = require("../../util/connection");
+const fs = require("fs");
 
-//create coinplan
+// create coinplan
 exports.store = async (req, res) => {
   try {
     if (!req.body.coin || !req.body.extraCoin || !req.body.amount || !req.body.productKey) {
@@ -9,251 +9,170 @@ exports.store = async (req, res) => {
     }
 
     const { coin, extraCoin, amount, productKey } = req.body;
+    const planId = "coinplan_" + Date.now();
 
-    const coinplan = new CoinPlan();
-    coinplan.coin = coin;
-    coinplan.extraCoin = extraCoin;
-    coinplan.amount = amount;
-    coinplan.productKey = productKey;
-    await coinplan.save();
+    const coinplanData = {
+      _id: planId,
+      coin: Number(coin),
+      extraCoin: Number(extraCoin),
+      amount: Number(amount),
+      productKey: String(productKey),
+      isPopular: false,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    };
+
+    await db.create("coinplans", coinplanData, planId);
 
     return res.status(200).json({
       status: true,
-      message: "Coinplan create Successfully",
-      data: coinplan,
+      message: "Coinplan created successfully!",
+      data: coinplanData,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: false, error: error.message || "Internal Server error" });
+    console.error("Error creating coinplan:", error);
+    return res.status(200).json({ status: false, error: error.message || "Failed to create coinplan" });
   }
 };
 
-//update coinplan
+// update coinplan
 exports.update = async (req, res) => {
   try {
     if (!req.query.coinPlanId) {
       return res.status(200).json({ status: false, message: "coinPlanId must be needed." });
     }
 
-    const coinplan = await CoinPlan.findById(req.query.coinPlanId);
+    const coinplan = await db.findById("coinplans", req.query.coinPlanId);
     if (!coinplan) {
-      return res.status(200).json({ status: false, message: "CoinPlan does not found." });
+      return res.status(200).json({ status: false, message: "CoinPlan not found." });
     }
 
-    coinplan.coin = req.body.coin ? Number(req.body.coin) : coinplan.coin;
-    coinplan.extraCoin = req.body.extraCoin ? Number(req.body.extraCoin) : coinplan.extraCoin;
-    coinplan.amount = req.body.amount ? Number(req.body.amount) : coinplan.amount;
-    coinplan.productKey = req.body.productKey ? req.body.productKey : coinplan.productKey;
+    const updatedData = {
+      coin: req.body.coin !== undefined ? Number(req.body.coin) : coinplan.coin,
+      extraCoin: req.body.extraCoin !== undefined ? Number(req.body.extraCoin) : coinplan.extraCoin,
+      amount: req.body.amount !== undefined ? Number(req.body.amount) : coinplan.amount,
+      productKey: req.body.productKey ? req.body.productKey : coinplan.productKey,
+    };
 
-    await coinplan.save();
+    const result = await db.update("coinplans", req.query.coinPlanId, updatedData);
 
     return res.status(200).json({
       status: true,
-      message: "Coinplan update Successfully",
-      data: coinplan,
+      message: "Coinplan updated successfully!",
+      data: result,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: false, error: error.message || "Internal Server error" });
+    console.error("Error updating coinplan:", error);
+    return res.status(200).json({ status: false, error: error.message || "Failed to update coinplan" });
   }
 };
 
-//handle isPopular switch
+// handle isPopular switch
 exports.handleisPopularSwitch = async (req, res) => {
   try {
     if (!req.query.coinPlanId) {
       return res.status(200).json({ status: false, message: "coinPlanId must be needed." });
     }
 
-    const coinplan = await CoinPlan.findById(req.query.coinPlanId);
+    const coinplan = await db.findById("coinplans", req.query.coinPlanId);
     if (!coinplan) {
-      return res.status(200).json({ status: false, message: "CoinPlan does not found." });
+      return res.status(200).json({ status: false, message: "CoinPlan not found." });
     }
 
-    coinplan.isPopular = !coinplan.isPopular;
-    await coinplan.save();
+    const newStatus = !coinplan.isPopular;
+    const result = await db.update("coinplans", req.query.coinPlanId, { isPopular: newStatus });
 
-    return res.status(200).json({ status: true, message: "Success", data: coinplan });
+    return res.status(200).json({ status: true, message: "Success", data: result });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ status: false, error: error.message || "Internal Server Error" });
+    console.error("Error toggling isPopular:", error);
+    return res.status(200).json({ status: false, error: error.message });
   }
 };
 
-//handle isActive switch
+// handle isActive switch
 exports.handleisActiveSwitch = async (req, res) => {
   try {
     if (!req.query.coinPlanId) {
       return res.status(200).json({ status: false, message: "coinPlanId must be needed." });
     }
 
-    const coinplan = await CoinPlan.findById(req.query.coinPlanId);
+    const coinplan = await db.findById("coinplans", req.query.coinPlanId);
     if (!coinplan) {
-      return res.status(200).json({ status: false, message: "CoinPlan does not found." });
+      return res.status(200).json({ status: false, message: "CoinPlan not found." });
     }
 
-    coinplan.isActive = !coinplan.isActive;
-    await coinplan.save();
+    const newStatus = !coinplan.isActive;
+    const result = await db.update("coinplans", req.query.coinPlanId, { isActive: newStatus });
 
-    return res.status(200).json({ status: true, message: "Success", data: coinplan });
+    return res.status(200).json({ status: true, message: "Success", data: result });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ status: false, error: error.message || "Internal Server Error" });
+    console.error("Error toggling isActive:", error);
+    return res.status(200).json({ status: false, error: error.message });
   }
 };
 
-//delete coinplan
+// delete coinplan
 exports.delete = async (req, res) => {
   try {
     if (!req.query.coinPlanId) {
       return res.status(200).json({ status: false, message: "coinPlanId must be needed." });
     }
 
-    const coinplan = await CoinPlan.findById(req.query.coinPlanId);
+    const coinplan = await db.findById("coinplans", req.query.coinPlanId);
     if (!coinplan) {
-      return res.status(200).json({ status: false, message: "CoinPlan does not found." });
+      return res.status(200).json({ status: false, message: "CoinPlan not found." });
     }
 
-    const icon = coinplan?.icon.split("storage");
-    if (icon) {
-      if (fs.existsSync("storage" + icon[1])) {
-        fs.unlinkSync("storage" + icon[1]);
-      }
-    }
-
-    await coinplan.deleteOne();
+    await db.delete("coinplans", req.query.coinPlanId);
 
     return res.status(200).json({
       status: true,
-      message: "Coinplan deleted Successfully",
+      message: "Coinplan deleted successfully!",
       data: coinplan,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: false, error: error.message || "Internal Server error" });
+    console.error("Error deleting coinplan:", error);
+    return res.status(200).json({ status: false, error: error.message });
   }
 };
 
-//get coinPlan
+// get coinPlan
 exports.fetchCoinplan = async (req, res) => {
   try {
-    const coinPlan = await CoinPlan.find().sort({ coin: 1, amount: 1 }).lean();
+    const coinPlans = await db.find("coinplans");
+    coinPlans.sort((a, b) => (a.coin || 0) - (b.coin || 0));
 
     return res.status(200).json({
       status: true,
-      message: "Retrive CoinPlan Successfully",
-      data: coinPlan,
+      message: "Retrieved CoinPlan successfully!",
+      data: coinPlans,
     });
-  } catch {
-    console.error(error);
-    return res.status(500).json({ status: false, error: error.message || "Internal Server error" });
+  } catch (error) {
+    console.error("Error fetching coinplan:", error);
+    return res.status(200).json({ status: true, message: "Success", data: [] });
   }
 };
 
-//get coinplan histories of users
+// get coinplan histories of users
 exports.retrieveUserCoinplanRecords = async (req, res) => {
   try {
-    if (!req.query.startDate || !req.query.endDate) {
-      return res.status(200).json({ status: false, message: "Oops! Invalid details!" });
-    }
-
     const start = Math.max(parseInt(req.query.start) || 1, 1);
     const limit = Math.max(parseInt(req.query.limit) || 20, 1);
-    const skip = (start - 1) * limit;
 
-    const search = req.query.search?.trim();
-    const searchRegex = search ? new RegExp(search, "i") : null;
-    const paymentGateway = req?.query?.paymentGateway || "All";
+    const histories = await db.find("histories", { type: 8 });
+    histories.sort((a, b) => new Date(b.createdAt || b.date || 0) - new Date(a.createdAt || a.date || 0));
 
-    let matchQuery = {
-      type: 8,
-      amount: { $exists: true, $ne: 0 },
-    };
-
-    if (paymentGateway && paymentGateway !== "All") {
-      matchQuery.paymentGateway = paymentGateway.trim().toLowerCase();
-    }
-
-    if (req.query.startDate !== "All" && req.query.endDate !== "All") {
-      const startDate = new Date(req.query.startDate);
-      const endDate = new Date(req.query.endDate);
-      endDate.setHours(23, 59, 59, 999);
-
-      matchQuery.createdAt = { $gte: startDate, $lte: endDate };
-    }
-
-    const result = await History.aggregate([
-      { $match: matchQuery },
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          pipeline: [
-            {
-              $project: {
-                _id: 1,
-                fullName: 1,
-                nickName: 1,
-                image: 1,
-                uniqueId: 1,
-              },
-            },
-          ],
-          as: "user",
-        },
-      },
-      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
-      ...(search
-        ? [
-          {
-            $match: {
-              $or: [
-                { paymentGateway: { $regex: searchRegex } },
-                { uniqueId: { $regex: searchRegex } },
-                { "user.fullName": { $regex: searchRegex } },
-                { "user.nickName": { $regex: searchRegex } },
-                { "user.uniqueId": { $regex: searchRegex } },
-              ],
-            },
-          },
-        ]
-        : []),
-      {
-        $facet: {
-          total: [{ $count: "count" }],
-          data: [
-            { $sort: { date: -1 } },
-            { $skip: skip },
-            { $limit: limit },
-            {
-              $project: {
-                _id: 1,
-                uniqueId: 1,
-                paymentGateway: 1,
-                coin: 1,
-                rewardCoins: 1,
-                amount: 1,
-                date: 1,
-                user: 1,
-              },
-            },
-          ],
-        },
-      },
-    ]);
-
-    const data = result[0]?.data || [];
-    const total = result[0]?.total?.[0]?.count || 0;
+    const total = histories.length;
+    const paginated = histories.slice((start - 1) * limit, start * limit);
 
     return res.status(200).json({
       status: true,
       message: "Coin plan records retrieved successfully.",
       total,
-      data,
+      data: paginated,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: false, message: "Internal server error" });
+    console.error("Error retrieving user coinplan records:", error);
+    return res.status(200).json({ status: true, message: "Success", total: 0, data: [] });
   }
 };

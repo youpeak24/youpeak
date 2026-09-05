@@ -1,50 +1,30 @@
-//import model
-const User = require("../models/user.model");
-const UserWiseSubscription = require("../models/userWiseSubscription.model");
-const WatchHistory = require("../models/watchHistory.model");
+"use strict";
+const db = require("./connection");
 
-//Check if user meets the monetization criteria
 const monetizationEnabled = async (userId) => {
   try {
-    const user = await User.findOne({ _id: userId });
-    console.log("Inside monetizationEnabled user =================", user._id);
-    console.log("requried minWatchTime :    ", settingJSON.minWatchTime);
-    console.log("requried minSubScriber :   ", settingJSON.minSubScriber);
+    const user = await db.findById("users", userId);
+    if (!user) return null;
 
-    const [subscriptions, totalViewMinutesOfOwnChannel] = await Promise.all([
-      UserWiseSubscription.countDocuments({ channelId: user.channelId }),
-      WatchHistory.aggregate([
-        { $match: { videoChannelId: user.channelId } },
-        {
-          $group: {
-            _id: null,
-            totalWatchTime: { $sum: "$totalWatchTime" },
-          },
-        },
-      ]),
-    ]);
+    const minWatchTime = global.settingJSON?.minWatchTime || 0;
+    const minSubscriber = global.settingJSON?.minSubscriber || global.settingJSON?.minSubScriber || 0;
 
-    const totalWatchTime = totalViewMinutesOfOwnChannel.length > 0 ? totalViewMinutesOfOwnChannel[0].totalWatchTime : 0;
-    const totalWatchTimeHours = totalWatchTime / 60; //Convert total watch time from minutes to hours
+    const subscriptions = await db.find("userWiseSubscriptions", { channelId: user.channelId || userId });
+    const watchHistories = await db.find("watchHistories", { videoChannelId: user.channelId || userId });
 
-    //console.log("total subscriptions: ", subscriptions);
-    console.log("total WatchTime Minutes", totalWatchTime);
-    console.log("total WatchTime Hours  ", totalWatchTimeHours);
+    const totalWatchTimeMinutes = watchHistories.reduce((sum, h) => sum + (Number(h.totalWatchTime) || 0), 0);
+    const totalWatchTimeHours = totalWatchTimeMinutes / 60;
 
-    //Check if user meets the criteria
-    const isMonetizationEnabled = totalWatchTimeHours >= settingJSON.minWatchTime && subscriptions >= settingJSON.minSubScriber;
-    console.log("isMonetizationEnabled before", isMonetizationEnabled);
+    const isMonetizationEnabled = totalWatchTimeHours >= minWatchTime && subscriptions.length >= minSubscriber;
 
-    // if (isMonetizationEnabled) {
-    //   console.log("If isMonetizationEnabled is", isMonetizationEnabled);
-    //   await User.updateOne({ _id: user._id }, { $set: { isMonetization: isMonetizationEnabled } });
-    // }
+    if (isMonetizationEnabled && !user.isMonetization) {
+      await db.update("users", userId, { isMonetization: true });
+    }
 
-    const data = await User.findById(user._id);
-    return data;
+    return await db.findById("users", userId);
   } catch (error) {
     console.error("Error in checking monetization eligibility:", error);
-    throw error;
+    return null;
   }
 };
 

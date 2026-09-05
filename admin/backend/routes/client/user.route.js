@@ -4,14 +4,23 @@ const route = express.Router();
 
 const checkAccessWithSecretKey = require("../../checkAccess");
 
-//controller
+// ── Firestore controllers (login, signup, profile) ──
+const FirestoreUserCtrl = require("../../controllers/client/userFirestore.controller");
+
+// ── Legacy controller for all other endpoints ──
 const UserController = require("../../controllers/client/user.controller");
 
-//user login or sign up
-route.post("/login", checkAccessWithSecretKey(), UserController.store);
+// user login or sign up  ← FIRESTORE
+route.post("/login", checkAccessWithSecretKey(), FirestoreUserCtrl.store);
 
-//check the user is exists or not for loginType 4 (email-password)
-route.post("/checkUser", checkAccessWithSecretKey(), UserController.checkUser);
+// check the user is exists or not for loginType 4  ← FIRESTORE
+route.post("/checkUser", checkAccessWithSecretKey(), FirestoreUserCtrl.checkUser);
+
+// get user profile who login  ← FIRESTORE
+route.get("/profile", checkAccessWithSecretKey(), FirestoreUserCtrl.getProfile);
+
+// update profile of the user (when user login or signUp)  ← FIRESTORE
+route.patch("/updateProfile", checkAccessWithSecretKey(), FirestoreUserCtrl.updateProfile);
 
 //check referral code is valid and apply referral code by user
 route.patch("/validateAndApplyReferralCode", checkAccessWithSecretKey(), UserController.validateAndApplyReferralCode);
@@ -22,14 +31,8 @@ route.patch("/handleAdWatchReward", checkAccessWithSecretKey(), UserController.h
 //earn coin from engagement video reward
 route.patch("/handleEngagementVideoWatchReward", checkAccessWithSecretKey(), UserController.handleEngagementVideoWatchReward);
 
-//get user profile who login
-route.get("/profile", checkAccessWithSecretKey(), UserController.getProfile);
-
 //update details of the channel (create your channel button)
 route.patch("/update", checkAccessWithSecretKey(), UserController.update);
-
-//update profile of the user (when user login or signUp)
-route.patch("/updateProfile", checkAccessWithSecretKey(), UserController.updateProfile);
 
 //update password
 route.patch("/updatePassword", checkAccessWithSecretKey(), UserController.updatePassword);

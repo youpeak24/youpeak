@@ -31,18 +31,45 @@ exports.dashboardCount = async (req, res) => {
 // get date wise chartAnalytic for users, videos, shorts
 exports.chartAnalytic = async (req, res) => {
   try {
+    const users = await db.find("users");
+    const videos = await db.find("videos");
+    const shorts = await db.find("shorts");
+
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    const analyticData = months.map((month) => ({
+    const monthCounts = months.map((month) => ({
       month,
       user: 0,
       video: 0,
       short: 0,
     }));
 
+    // Helper to get month index 0..11 from createdAt date
+    const getMonthIdx = (item) => {
+      const dateStr = item.createdAt || item.date;
+      if (!dateStr) return new Date().getMonth();
+      const d = new Date(dateStr);
+      return isNaN(d.getTime()) ? new Date().getMonth() : d.getMonth();
+    };
+
+    users.forEach((u) => {
+      const idx = getMonthIdx(u);
+      monthCounts[idx].user += 1;
+    });
+
+    videos.forEach((v) => {
+      const idx = getMonthIdx(v);
+      monthCounts[idx].video += 1;
+    });
+
+    shorts.forEach((s) => {
+      const idx = getMonthIdx(s);
+      monthCounts[idx].short += 1;
+    });
+
     return res.status(200).send({
       status: true,
       message: "Analytics fetched successfully!",
-      analytic: analyticData,
+      analytic: monthCounts,
     });
   } catch (error) {
     console.error("chartAnalytic error:", error);
@@ -53,12 +80,28 @@ exports.chartAnalytic = async (req, res) => {
 // get date wise chartAnalytic for active users, inActive users
 exports.chartAnalyticOfactiveInactiveUser = async (req, res) => {
   try {
+    const users = await db.find("users");
+    let activeUser = 0;
+    let blockUser = 0;
+
+    users.forEach((u) => {
+      if (u.isBlock) {
+        blockUser += 1;
+      } else {
+        activeUser += 1;
+      }
+    });
+
     return res.status(200).send({
       status: true,
       message: "Success",
-      analytic: [],
+      analytic: [
+        { name: "Total Active User", count: activeUser },
+        { name: "Total Block User", count: blockUser },
+      ],
     });
   } catch (error) {
+    console.error("chartAnalyticOfactiveInactiveUser error:", error);
     return res.status(500).json({ status: false, message: error.message });
   }
 };

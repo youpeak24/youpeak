@@ -1,19 +1,19 @@
-const Advertise = require("../../models/advertise.model");
+const db = require("../../util/connection");
 
 //get setting
 exports.get = async (req, res) => {
   try {
-    const [advertise, setting] = await Promise.all([Advertise.findOne().sort({ createdAt: -1 }).lean(), settingJSON ? settingJSON : null]);
-
-    if (!setting) {
-      return res.status(200).json({ status: false, message: "Setting does not found." });
-    }
-
+    let advertise = await db.findOne("advertises", {});
     if (!advertise) {
-      return res.status(200).json({ status: false, message: "Advertise Setting does not found." });
+      advertise = {
+        isGoogle: true,
+        android: { google: { interstitial: "", native: "", reward: "", nativeAdVideo: "", videoAdUrl: "" } },
+        ios: { google: { interstitial: "", native: "", reward: "", nativeAdVideo: "", videoAdUrl: "" } },
+      };
     }
 
-    const settingObj = settingJSON.toObject();
+    const setting = global.settingJSON ? global.settingJSON : {};
+    const settingObj = typeof setting.toObject === "function" ? setting.toObject() : { ...setting };
 
     const merged = { ...settingObj, ...advertise };
 

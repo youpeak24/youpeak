@@ -101,6 +101,8 @@ const userSchema = new mongoose.Schema(
 
     // Tier Management & Limits
     membershipTierId: { type: mongoose.Schema.Types.ObjectId, ref: "MembershipTier", default: null },
+    activeCreatorTierId: { type: mongoose.Schema.Types.ObjectId, ref: "MembershipTier", default: null },
+    totalSubscribers: { type: Number, default: 0 },
     dailyEarningCoinsToday: { type: Number, default: 0 },
     dailyAdCountToday: { type: Number, default: 0 },
     dailyCheckInsToday: { type: Number, default: 0 },

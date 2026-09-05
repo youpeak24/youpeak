@@ -1,7 +1,6 @@
-const Agency = require("../models/agency.model");
-const AgencyCommission = require("../models/agencyCommission.model");
+"use strict";
+const db = require("./connection");
 
-// Automatically record agency commission whenever a platform monetization event happens
 const recordAgencyCommission = async ({
   agencyId,
   sourceType,
@@ -12,48 +11,43 @@ const recordAgencyCommission = async ({
 }) => {
   try {
     if (!grossAmount || grossAmount <= 0) return null;
-
     let targetAgencyId = agencyId;
 
     if (!targetAgencyId && (district || state)) {
-      const agency = await Agency.findOne({
-        isActive: true,
-        $or: [
-          { district: { $regex: new RegExp(`^${district}$`, "i") } },
-          { state: { $regex: new RegExp(`^${state}$`, "i") } },
-        ],
-      });
-      if (agency) targetAgencyId = agency._id;
+      const agencies = await db.find("agencies", { isActive: true });
+      const found = agencies.find(a =>
+        (district && a.district?.toLowerCase() === district.toLowerCase()) ||
+        (state && a.state?.toLowerCase() === state.toLowerCase())
+      );
+      if (found) targetAgencyId = found._id || found.id;
     }
 
     if (!targetAgencyId) return null;
 
-    const agency = await Agency.findById(targetAgencyId);
+    const agency = await db.findById("agencies", targetAgencyId);
     if (!agency || !agency.isActive) return null;
 
     const rate = agency.commissionRatePercentage || 10;
     const commissionAmount = (grossAmount * rate) / 100;
 
-    const commissionRecord = new AgencyCommission({
-      agencyId: agency._id,
+    const record = await db.create("agencyCommissions", {
+      agencyId: agency._id || agency.id,
       sourceType,
       grossAmount,
       commissionRatePercentage: rate,
       commissionAmount,
-      state: state || agency.state,
-      district: district || agency.district,
+      state: state || agency.state || "",
+      district: district || agency.district || "",
       userId,
       payoutStatus: "PENDING",
+      createdAt: new Date().toISOString(),
     });
 
-    await commissionRecord.save();
-    return commissionRecord;
+    return record;
   } catch (error) {
     console.error("Error recording agency commission:", error);
     return null;
   }
 };
 
-module.exports = {
-  recordAgencyCommission,
-};
+module.exports = { recordAgencyCommission };

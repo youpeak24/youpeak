@@ -1,10 +1,18 @@
 module.exports = {
   _id: "6a5a008c9fb97d1dc7aa9e61",
   storage: {
-    local: true,
+    local: false,
     awsS3: false,
     digitalOcean: false,
+    cloudflareR2: true
   },
+  r2AccountId: "da97865a5caa8f2b10c795c92912615e",
+  r2AccessKeyId: "cdb9bca482d4459a3d9a99533d71939b",
+  r2SecretAccessKey: "9d2946e08c57db8ed33ef5d29044d066c73274b103d26d3ae43e7ba2a12582df",
+  r2BucketName: "youpeak-videos",
+  r2Endpoint: "https://da97865a5caa8f2b10c795c92912615e.r2.cloudflarestorage.com",
+  r2PublicDomain: "https://pub-da97865a5caa8f2b10c795c92912615e.r2.dev",
+  r2CdnUrl: "https://pub-da97865a5caa8f2b10c795c92912615e.r2.dev",
   currency: {
     name: "USD",
     symbol: "$",
@@ -12,13 +20,13 @@ module.exports = {
     currencyCode: "USD",
     isDefault: true,
   },
-  privacyPolicyLink: "",
+  privacyPolicyLink: "https://youpeak-9ff65.web.app",
   privacyPolicyText: "PRIVACY POLICY TEXT",
   adminCommissionOfPaidChannel: 0,
   adminCommissionOfPaidVideo: 0,
   durationOfShorts: 60000,
   createdAt: "2023-08-08T12:48:46.902Z",
-  updatedAt: "2025-06-17T12:25:23.113Z",
+  updatedAt: new Date().toISOString(),
   minWithdrawalRequestedAmount: 10,
   zegoAppId: "",
   zegoAppSignIn: "",
@@ -42,12 +50,12 @@ module.exports = {
   watermarkIcon: "",
   watermarkType: 2,
   resendApiKey: "",
-  awsAccessKey: "AWS ACCESS",
-  awsBucketName: "AWS BUCKET UPDATE",
-  awsEndpoint: "AWS ENDPOINTS",
-  awsHostname: "AWS HOST",
-  awsRegion: "AWS REGION",
-  awsSecretKey: "AWS SECRET KEY",
+  awsAccessKey: "",
+  awsBucketName: "",
+  awsEndpoint: "",
+  awsHostname: "",
+  awsRegion: "",
+  awsSecretKey: "",
   doAccessKey: "",
   doBucketName: "",
   doEndpoint: "",
@@ -59,26 +67,5 @@ module.exports = {
   iosAppLink: "",
   iosAppVersion: "1.0.0",
   zegoServerSecret: "",
-  androidAssetLinks: [
-    {
-      relation: ["delegate_permission/common.handle_all_urls"],
-      target: {
-        namespace: "android_app",
-        package_name: "com.demo",
-        sha256_cert_fingerprints: ["85:CE:04:29:D7:0A:77:F7:91:19:2E:97:28:24:35:5F:59:AD:11:40:6D:A7:1E"],
-      },
-    },
-  ],
-  appleAppSiteAssociation: {
-    applinks: {
-      apps: [],
-      details: [
-        {
-          appID: "W5T948BC35.com.demo",
-          paths: ["*"],
-        },
-      ],
-    },
-  },
-  websiteUrl: ""
+  websiteUrl: "https://youpeak-9ff65.web.app"
 };

@@ -1,13 +1,12 @@
-const FraudAlert = require("../models/fraudAlert.model");
-const User = require("../models/user.model");
-const Setting = require("../models/setting.model");
+"use strict";
+const db = require("./connection");
 
 const evaluateFraudRisk = async ({ userId, riskType, details = "", ipAddress = "" }) => {
   try {
-    const setting = await Setting.findOne();
+    const setting = (global.settingJSON) || (await db.findOne("settings", {})) || {};
     if (setting && setting.fraudDetectionEnabled === false) return null;
 
-    const user = await User.findById(userId);
+    const user = await db.findById("users", userId);
     if (!user) return null;
 
     let riskScore = 50;
@@ -17,31 +16,34 @@ const evaluateFraudRisk = async ({ userId, riskType, details = "", ipAddress = "
     if (riskType === "EXCEEDED_DAILY_LIMIT_VELOCITY") riskScore = 60;
 
     let actionTaken = "FLAGGED";
+    const userUpdates = {};
+
     if (setting && setting.autoBlockHighRiskFraud && riskScore >= 80) {
       actionTaken = "AUTO_BLOCKED";
-      user.isBlock = true;
-      user.isRestricted = true;
-      user.restrictionReason = `Auto-blocked due to high risk fraud score: ${riskType}`;
+      userUpdates.isBlock = true;
+      userUpdates.isRestricted = true;
+      userUpdates.restrictionReason = `Auto-blocked due to high risk fraud score: ${riskType}`;
     } else {
-      user.fraudFlags = (user.fraudFlags || 0) + 1;
-      if (user.fraudFlags >= 3) {
-        user.isRestricted = true;
-        user.restrictionReason = "Multiple fraud alerts triggered";
+      const flags = (user.fraudFlags || 0) + 1;
+      userUpdates.fraudFlags = flags;
+      if (flags >= 3) {
+        userUpdates.isRestricted = true;
+        userUpdates.restrictionReason = "Multiple fraud alerts triggered";
       }
     }
 
-    await user.save();
+    await db.update("users", userId, userUpdates);
 
-    const fraudRecord = new FraudAlert({
-      userId: user._id,
+    const fraudRecord = await db.create("fraudAlerts", {
+      userId: user._id || user.id,
       riskType,
       riskScore,
       details,
       ipAddress: ipAddress || user.ipAddress || "",
       actionTaken,
+      createdAt: new Date().toISOString(),
     });
 
-    await fraudRecord.save();
     return fraudRecord;
   } catch (error) {
     console.error("Error evaluating fraud risk:", error);
@@ -49,6 +51,4 @@ const evaluateFraudRisk = async ({ userId, riskType, details = "", ipAddress = "
   }
 };
 
-module.exports = {
-  evaluateFraudRisk,
-};
+module.exports = { evaluateFraudRisk };

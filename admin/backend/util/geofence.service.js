@@ -1,8 +1,8 @@
-const Agency = require("../models/agency.model");
+"use strict";
+const db = require("./connection");
 
-// Haversine formula to calculate distance between 2 points in km
 const getDistanceInKm = (lat1, lon1, lat2, lon2) => {
-  const R = 6371; // Earth radius in km
+  const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
   const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
@@ -15,13 +15,11 @@ const getDistanceInKm = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
-// Resolve Agency based on Lat/Lng or District/State text
 const resolveAgency = async ({ latitude, longitude, district, state, city }) => {
   try {
-    const agencies = await Agency.find({ isActive: true });
+    const agencies = await db.find("agencies", { isActive: true });
     if (!agencies || agencies.length === 0) return null;
 
-    // 1. Radius/Geofence match if lat/lng available
     if (latitude && longitude) {
       for (const agency of agencies) {
         if (
@@ -37,13 +35,12 @@ const resolveAgency = async ({ latitude, longitude, district, state, city }) => 
             agency.geofenceCenter.longitude
           );
           if (dist <= agency.radiusKm) {
-            return agency._id;
+            return agency._id || agency.id;
           }
         }
       }
     }
 
-    // 2. District & State string match
     if (district || state) {
       const match = agencies.find((agency) => {
         const districtMatch =
@@ -56,7 +53,7 @@ const resolveAgency = async ({ latitude, longitude, district, state, city }) => 
           agency.state.toLowerCase() === state.toLowerCase();
         return districtMatch || stateMatch;
       });
-      if (match) return match._id;
+      if (match) return match._id || match.id;
     }
 
     return null;
@@ -66,7 +63,4 @@ const resolveAgency = async ({ latitude, longitude, district, state, city }) => 
   }
 };
 
-module.exports = {
-  resolveAgency,
-  getDistanceInKm,
-};
+module.exports = { resolveAgency, getDistanceInKm };

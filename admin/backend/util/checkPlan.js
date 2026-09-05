@@ -1,82 +1,52 @@
-//import model
-const PremiumPlan = require("../models/premiumPlan.model");
-const User = require("../models/user.model");
-
-//momemt
+"use strict";
+const db = require("./connection");
 const moment = require("moment");
 
-//check user plan is expired or not
 const checkPlan = async (userId, res) => {
-  console.log("Inside checkPlan userId", userId);
-
-  const user = await User.findById(userId);
-  if (!user) {
-    return res.status(200).json({ status: false, message: "user does not found!" });
-  }
-
-  if (user.isBlock) {
-    return res.status(200).json({ status: false, message: "you are blocked by admin!" });
-  }
-
-  if (user.plan.planStartDate !== null && user.plan.premiumPlanId !== null) {
-    const plan = await PremiumPlan.findById(user.plan.premiumPlanId);
-    if (!plan) {
-      return res.status(200).json({ status: false, message: "premiumPlan does not found for that user!" });
+  try {
+    const user = await db.findById("users", userId);
+    if (!user) {
+      if (res) return res.status(200).json({ status: false, message: "user does not found!" });
+      return null;
     }
 
-    if (plan.validityType.toLowerCase() === "day") {
-      const currentDate = moment();
-      const planStartDate = moment(user.plan.planStartDate);
+    if (user.isBlock) {
+      if (res) return res.status(200).json({ status: false, message: "you are blocked by admin!" });
+      return null;
+    }
 
-      const diffTime = currentDate.diff(planStartDate, "days");
+    if (user.plan && user.plan.planStartDate && user.plan.premiumPlanId) {
+      const plan = await db.findById("premiumPlans", user.plan.premiumPlanId);
+      if (plan && plan.validityType) {
+        const type = plan.validityType.toLowerCase();
+        const currentDate = moment();
+        const planStartDate = moment(user.plan.planStartDate);
+        const diff = currentDate.diff(planStartDate, type === "day" ? "days" : type === "month" ? "months" : "years");
 
-      if (diffTime > plan.validity) {
-        user.isPremiumPlan = false;
-        user.plan.planStartDate = null;
-        user.plan.planEndDate = null;
-        user.plan.premiumPlanId = null;
-        user.plan.amount = 0;
-        user.plan.validity = 0;
-        user.plan.validityType = null;
-        user.plan.planBenefit = [];
+        if (diff >= plan.validity) {
+          const resetPlan = {
+            isPremiumPlan: false,
+            plan: {
+              planStartDate: null,
+              planEndDate: null,
+              premiumPlanId: null,
+              amount: 0,
+              validity: 0,
+              validityType: null,
+              planBenefit: [],
+            }
+          };
+          await db.update("users", userId, resetPlan);
+          return await db.findById("users", userId);
+        }
       }
     }
 
-    if (plan.validityType.toLowerCase() === "month") {
-      const diffTime = moment().diff(moment(user.plan.planStartDate), "month");
-      console.log("diffTime in month: ", diffTime);
-
-      if (diffTime >= plan.validity) {
-        user.isPremiumPlan = false;
-        user.plan.planStartDate = null;
-        user.plan.planEndDate = null;
-        user.plan.premiumPlanId = null;
-        user.plan.amount = 0;
-        user.plan.validity = 0;
-        user.plan.validityType = null;
-        user.plan.planBenefit = [];
-      }
-    }
-
-    if (plan.validityType.toLowerCase() === "year") {
-      const diffTime = moment().diff(moment(user.plan.planStartDate), "year");
-      console.log("diffTime in year: ", diffTime);
-
-      if (diffTime >= plan.validity) {
-        user.isPremiumPlan = false;
-        user.plan.planStartDate = null;
-        user.plan.planEndDate = null;
-        user.plan.premiumPlanId = null;
-        user.plan.amount = 0;
-        user.plan.validity = 0;
-        user.plan.validityType = null;
-        user.plan.planBenefit = [];
-      }
-    }
+    return user;
+  } catch (error) {
+    console.error("checkPlan error:", error);
+    return null;
   }
-
-  await user.save();
-  return user;
 };
 
 module.exports = { checkPlan };

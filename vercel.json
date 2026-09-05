@@ -3,7 +3,7 @@
   "outputDirectory": "admin/frontend/build",
   "functions": {
     "api/index.js": {
-      "includeFiles": "functions/backend/**"
+      "includeFiles": "{functions/backend/**,DB/**,admin/frontend/DB/**}"
     }
   },
   "rewrites": [

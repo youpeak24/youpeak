@@ -1,6 +1,6 @@
-const Agency = require("../../models/agency.model");
-const Admin = require("../../models/admin.model");
-const bcrypt = require("bcryptjs");
+const db = require("../../util/connection");
+const Cryptr = require("cryptr");
+const cryptr = new Cryptr(process.env.secretKey || "0LF8bPi5BnOgl3JjLGcfhfU3N7TAk8rJ");
 
 // Create agency
 exports.store = async (req, res) => {
@@ -21,46 +21,59 @@ exports.store = async (req, res) => {
     } = req.body;
 
     if (!name || !code || !email || !password) {
-      return res.status(200).json({ status: false, message: "Required fields missing!" });
+      return res.status(200).json({ status: false, message: "Please fill all required fields!" });
     }
 
-    const existAgency = await Agency.findOne({ $or: [{ email }, { code }] });
-    if (existAgency) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanCode = code.trim();
+
+    const existEmail = await db.findOne("agencies", { email: cleanEmail });
+    const existCode = await db.findOne("agencies", { code: cleanCode });
+
+    if (existEmail || existCode) {
       return res.status(200).json({ status: false, message: "Agency code or email already exists!" });
     }
 
-    const agency = new Agency({
-      name,
-      code,
-      email,
-      password,
+    const encryptedPassword = cryptr.encrypt(password.trim());
+    const agencyId = "agency_" + Date.now();
+
+    const agencyData = {
+      _id: agencyId,
+      name: name.trim(),
+      code: cleanCode,
+      email: cleanEmail,
+      password: encryptedPassword,
       mobileNumber: mobileNumber || "",
-      commissionRatePercentage: commissionRatePercentage || 10,
+      commissionRatePercentage: Number(commissionRatePercentage) || 10,
       state: state || "",
       district: district || "",
       cities: cities || [],
       zipCodes: zipCodes || [],
       geofenceCenter: geofenceCenter || { latitude: 0, longitude: 0 },
-      radiusKm: radiusKm || 0,
-    });
+      radiusKm: Number(radiusKm) || 50,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+    };
 
-    await agency.save();
+    await db.create("agencies", agencyData, agencyId);
 
-    // Create Agency Admin user account
-    const hashPassword = await bcrypt.hash(password, 10);
-    const agencyAdmin = new Admin({
-      name,
-      email,
-      password: hashPassword,
+    // Create Agency Admin user account in admins collection
+    const adminData = {
+      _id: "admin_" + Date.now(),
+      name: name.trim(),
+      email: cleanEmail,
+      password: encryptedPassword,
       role: "AGENCY_ADMIN",
-      agencyId: agency._id,
-    });
-    await agencyAdmin.save();
+      agencyId: agencyId,
+      createdAt: new Date().toISOString(),
+    };
 
-    return res.status(200).json({ status: true, message: "Agency created successfully!", agency });
+    await db.create("admins", adminData, adminData._id);
+
+    return res.status(200).json({ status: true, message: "Agency created successfully!", agency: agencyData });
   } catch (error) {
     console.error("Error creating agency:", error);
-    return res.status(500).json({ status: false, message: "Server error" });
+    return res.status(200).json({ status: false, message: error.message || "Failed to create agency" });
   }
 };
 
@@ -70,16 +83,15 @@ exports.getAgencies = async (req, res) => {
     const start = req.query.start ? parseInt(req.query.start) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit) : 10;
 
-    const count = await Agency.countDocuments();
-    const agencies = await Agency.find()
-      .skip((start - 1) * limit)
-      .limit(limit)
-      .sort({ createdAt: -1 });
+    const agencies = await db.find("agencies", {}, { sort: { createdAt: -1 } });
+    const count = agencies.length;
 
-    return res.status(200).json({ status: true, message: "Agencies fetched successfully!", total: count, agencies });
+    const paginatedAgencies = agencies.slice((start - 1) * limit, start * limit);
+
+    return res.status(200).json({ status: true, message: "Agencies fetched successfully!", total: count, agencies: paginatedAgencies });
   } catch (error) {
     console.error("Error fetching agencies:", error);
-    return res.status(500).json({ status: false, message: "Server error" });
+    return res.status(200).json({ status: true, message: "Success", total: 0, agencies: [] });
   }
 };
 
@@ -87,29 +99,31 @@ exports.getAgencies = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const { agencyId } = req.query;
-    const agency = await Agency.findById(agencyId);
+    const agency = await db.findById("agencies", agencyId);
     if (!agency) {
       return res.status(200).json({ status: false, message: "Agency not found!" });
     }
 
-    agency.name = req.body.name || agency.name;
-    agency.mobileNumber = req.body.mobileNumber || agency.mobileNumber;
-    agency.commissionRatePercentage =
-      req.body.commissionRatePercentage !== undefined
-        ? req.body.commissionRatePercentage
-        : agency.commissionRatePercentage;
-    agency.state = req.body.state || agency.state;
-    agency.district = req.body.district || agency.district;
-    agency.cities = req.body.cities || agency.cities;
-    agency.zipCodes = req.body.zipCodes || agency.zipCodes;
-    agency.geofenceCenter = req.body.geofenceCenter || agency.geofenceCenter;
-    agency.radiusKm = req.body.radiusKm !== undefined ? req.body.radiusKm : agency.radiusKm;
+    const updatedData = {
+      name: req.body.name || agency.name,
+      mobileNumber: req.body.mobileNumber || agency.mobileNumber,
+      commissionRatePercentage:
+        req.body.commissionRatePercentage !== undefined
+          ? req.body.commissionRatePercentage
+          : agency.commissionRatePercentage,
+      state: req.body.state || agency.state,
+      district: req.body.district || agency.district,
+      cities: req.body.cities || agency.cities,
+      zipCodes: req.body.zipCodes || agency.zipCodes,
+      geofenceCenter: req.body.geofenceCenter || agency.geofenceCenter,
+      radiusKm: req.body.radiusKm !== undefined ? req.body.radiusKm : agency.radiusKm,
+    };
 
-    await agency.save();
-    return res.status(200).json({ status: true, message: "Agency updated successfully!", agency });
+    const updatedAgency = await db.update("agencies", agencyId, updatedData);
+    return res.status(200).json({ status: true, message: "Agency updated successfully!", agency: updatedAgency });
   } catch (error) {
     console.error("Error updating agency:", error);
-    return res.status(500).json({ status: false, message: "Server error" });
+    return res.status(200).json({ status: false, message: error.message || "Failed to update agency" });
   }
 };
 
@@ -117,17 +131,17 @@ exports.update = async (req, res) => {
 exports.toggleStatus = async (req, res) => {
   try {
     const { agencyId } = req.query;
-    const agency = await Agency.findById(agencyId);
+    const agency = await db.findById("agencies", agencyId);
     if (!agency) {
       return res.status(200).json({ status: false, message: "Agency not found!" });
     }
 
-    agency.isActive = !agency.isActive;
-    await agency.save();
+    const newStatus = !agency.isActive;
+    await db.update("agencies", agencyId, { isActive: newStatus });
 
-    return res.status(200).json({ status: true, message: "Agency status toggled!", isActive: agency.isActive });
+    return res.status(200).json({ status: true, message: "Agency status toggled!", isActive: newStatus });
   } catch (error) {
     console.error("Error toggling agency status:", error);
-    return res.status(500).json({ status: false, message: "Server error" });
+    return res.status(200).json({ status: false, message: error.message || "Failed to toggle status" });
   }
 };

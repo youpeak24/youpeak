@@ -40,6 +40,9 @@ const videoSchema = new mongoose.Schema(
     shareCount: { type: Number, default: 0 }, //when user share the video then shareCount increased
     like: { type: Number, default: 0 },
     dislike: { type: Number, default: 0 },
+
+    creatorEarnedAmountInINR: { type: Number, default: 0 }, // total accumulated creator earnings for this video
+    isEarningCapped: { type: Boolean, default: false }, // true when video creator earnings hit max cap
   },
   {
     timestamps: true,

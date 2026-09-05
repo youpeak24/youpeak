@@ -29,6 +29,8 @@ const dailyCoinReward = require("./dailyRewardCoin.route");
 const coinplan = require("./coinplan.route");
 const playbackSession = require("./playbackSession.route");
 const translation = require("./translation.route");
+const creatorTier = require("./creatorTier.route");
+const userTaskReward = require("./userTaskReward.route");
 
 //exports client's route.js
 route.use("/user", user);
@@ -57,5 +59,7 @@ route.use("/dailyCoinReward", dailyCoinReward);
 route.use("/coinplan", coinplan);
 route.use("/playbackSession", playbackSession);
 route.use("/translation", translation);
+route.use("/creatorTier", creatorTier);
+route.use("/userTaskReward", userTaskReward);
 
 module.exports = route;

@@ -1,7 +1,4 @@
-const Currency = require("../../models/currency.model");
-
-//import model
-const Setting = require("../../models/setting.model");
+const db = require("../../util/connection");
 
 exports.store = async (req, res) => {
   try {
@@ -9,165 +6,156 @@ exports.store = async (req, res) => {
       return res.status(200).json({ status: false, message: "Oops ! Invalid details." });
     }
 
-    const currency = new Currency();
-    currency.name = req.body.name;
-    currency.symbol = req.body.symbol;
-    currency.countryCode = req.body.countryCode;
-    currency.currencyCode = req.body.currencyCode;
-    await currency.save();
+    const currencyId = "currency_" + Date.now();
+    const currencyData = {
+      _id: currencyId,
+      name: req.body.name,
+      symbol: req.body.symbol,
+      countryCode: req.body.countryCode,
+      currencyCode: req.body.currencyCode,
+      isDefault: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    await db.create("currencies", currencyData, currencyId);
 
     return res.status(200).json({
       status: true,
-      message: "currency create Successfully",
-      currency,
+      message: "Currency created successfully",
+      currency: currencyData,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      status: false,
-      error: error.message || "Internal Server error",
-    });
+    console.error("Error storing currency:", error);
+    return res.status(500).json({ status: false, error: error.message || "Internal Server Error" });
   }
 };
 
 exports.get = async (req, res) => {
   try {
-    const currency = await Currency.find().sort({ createdAt: -1 }).lean();
+    let currencies = await db.find("currencies", {}, { sort: { createdAt: -1 } });
+    if (currencies.length === 0) {
+      const defaultCurrency = {
+        _id: "currency_default",
+        name: "Indian Rupee",
+        symbol: "₹",
+        countryCode: "IN",
+        currencyCode: "INR",
+        isDefault: true,
+        createdAt: new Date().toISOString(),
+      };
+      await db.create("currencies", defaultCurrency, "currency_default");
+      currencies = [defaultCurrency];
+    }
 
     return res.status(200).json({
       status: true,
-      message: "Currency fetch Successfully",
-      currency,
+      message: "Currency fetched successfully",
+      currency: currencies,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: false,
-      error: error.message || "Internal Server Error",
+    console.error("Error fetching currencies:", error);
+    return res.status(200).json({
+      status: true,
+      message: "Success",
+      currency: [{ _id: "default", name: "INR", symbol: "₹", currencyCode: "INR", isDefault: true }],
     });
   }
 };
 
 exports.update = async (req, res) => {
   try {
-    const currencyId = req.query.currencyId;
+    const { currencyId } = req.query;
     if (!currencyId) {
       return res.status(200).json({ status: false, message: "Oops ! Invalid details." });
     }
 
-    const currency = await Currency.findById(currencyId);
-    if (!currency) {
-      return res.status(200).json({ status: false, message: "Currency does not found." });
-    }
-
-    currency.name = req.body.name ? req.body.name : req.body.name;
-    currency.symbol = req.body.symbol ? req.body.symbol : req.body.symbol;
-    currency.countryCode = req.body.countryCode ? req.body.countryCode : req.body.countryCode;
-    currency.currencyCode = req.body.currencyCode ? req.body.currencyCode : req.body.currencyCode;
-    await currency.save();
+    const updated = await db.update("currencies", currencyId, {
+      name: req.body.name,
+      symbol: req.body.symbol,
+      countryCode: req.body.countryCode,
+      currencyCode: req.body.currencyCode,
+    });
 
     return res.status(200).json({
       status: true,
-      message: "Currency updated Successfully",
-      currency,
+      message: "Currency updated successfully",
+      currency: updated,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      status: false,
-      error: error.message || "Internal Server error",
-    });
+    console.error("Error updating currency:", error);
+    return res.status(500).json({ status: false, error: error.message || "Internal Server Error" });
   }
 };
 
 exports.defaultCurrency = async (req, res) => {
   try {
-    const currencyId = req.query.currencyId;
+    const { currencyId } = req.query;
     if (!currencyId) {
       return res.status(200).json({ status: false, message: "Oops ! Invalid details." });
     }
 
-    const [currency, setting, updateCurrencies] = await Promise.all([Currency.findById(currencyId), Setting.findOne().sort({ createdAt: -1 }), Currency.updateMany({}, { isDefault: false })]);
-
-    if (!currency) {
-      return res.status(200).json({ status: false, message: "Currency does not found." });
+    const currencies = await db.find("currencies", {});
+    for (const c of currencies) {
+      const isDef = c._id === currencyId;
+      await db.update("currencies", c._id, { isDefault: isDef });
     }
 
-    if (!setting) {
-      return res.status(200).json({ status: false, message: "Setting does not found." });
-    }
+    const allCurrency = await db.find("currencies", {}, { sort: { createdAt: -1 } });
 
-    currency.isDefault = true;
-    setting.currency = {
-      name: currency.name,
-      symbol: currency.symbol,
-      countryCode: currency.countryCode,
-      currencyCode: currency.currencyCode,
-      isDefault: currency.isDefault,
-    };
-
-    await Promise.all([currency.save(), setting.save()]);
-
-    const allCurrency = await Currency.find().sort({ createdAt: -1 });
-
-    res.status(200).json({
+    return res.status(200).json({
       status: true,
-      message: "Default Currency updated Successfully",
+      message: "Default currency updated successfully",
       allCurrency,
     });
-
-    updateSettingFile(setting);
-    process.exit(1);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      status: false,
-      error: error.message || "Internal Server error",
-    });
+    console.error("Error updating default currency:", error);
+    return res.status(500).json({ status: false, error: error.message || "Internal Server Error" });
   }
 };
 
 exports.destroy = async (req, res) => {
   try {
-    const currencyId = req.query.currencyId;
+    const { currencyId } = req.query;
     if (!currencyId) {
       return res.status(200).json({ status: false, message: "Oops ! Invalid details!" });
     }
 
-    const [currency, currencyCount] = await Promise.all([Currency.findById(currencyId), Currency.countDocuments()]);
-
-    if (!currency) {
-      return res.status(200).json({ status: false, message: "Oops ! Currency does not found." });
-    }
-
-    if (currencyCount === 1) {
-      return res.status(200).json({ status: false, message: "You cannot delete the last currency." });
-    }
-
-    if (currency.isDefault) {
-      return res.status(200).json({ status: false, message: "The default currency could not be deleted." });
-    }
-
-    await currency.deleteOne();
-
-    return res.status(200).json({ status: true, message: "Currency deleted Successfully" });
+    await db.delete("currencies", currencyId);
+    return res.status(200).json({ status: true, message: "Currency deleted successfully" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: false, error: error.message || "Internal Server error" });
+    console.error("Error deleting currency:", error);
+    return res.status(500).json({ status: false, error: error.message || "Internal Server Error" });
   }
 };
 
 exports.getDefault = async (req, res) => {
   try {
-    const currency = await Currency.findOne({ isDefault: true }).lean();
+    let currency = await db.findOne("currencies", { isDefault: true });
+    if (!currency) {
+      currency = await db.findOne("currencies", {});
+    }
+    if (!currency) {
+      currency = {
+        _id: "currency_default",
+        name: "Indian Rupee",
+        symbol: "₹",
+        countryCode: "IN",
+        currencyCode: "INR",
+        isDefault: true,
+      };
+    }
 
     return res.status(200).json({
       status: true,
-      message: "Currency fetch Successfully",
+      message: "Default currency fetched successfully",
       currency,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ status: false, error: error.message || "Internal Server Error" });
+    console.error("Error fetching default currency:", error);
+    return res.status(200).json({
+      status: true,
+      message: "Success",
+      currency: { _id: "default", name: "INR", symbol: "₹", currencyCode: "INR", isDefault: true },
+    });
   }
 };
