@@ -28,9 +28,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install Admin Dependencies & Build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
           cd admin/frontend
           npm ci --legacy-peer-deps || npm install --legacy-peer-deps
