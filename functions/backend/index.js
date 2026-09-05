@@ -36,6 +36,8 @@ const fs = require("fs");
 //settingJson
 const settingJson = require("./setting");
 
+const os = require("os");
+
 //Declare global variable
 global.settingJSON = settingJson;
 
@@ -43,10 +45,12 @@ global.settingJSON = settingJson;
 global.updateSettingFile = (settingData) => {
   try {
     const settingJSON = JSON.stringify(settingData, null, 2);
-    fs.writeFileSync("setting.js", `module.exports = ${settingJSON};`, "utf8");
+    const tmpFile = path.join(os.tmpdir(), "setting.js");
+    fs.writeFileSync(tmpFile, `module.exports = ${settingJSON};`, "utf8");
   } catch (e) {}
   global.settingJSON = settingData;
 };
+
 
 const routes = require("./routes/index");
 app.use(routes);

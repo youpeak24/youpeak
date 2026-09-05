@@ -30,24 +30,23 @@ if (admin.apps.length === 0) {
 
 
 
+const os = require("os");
+
 class FirestoreDbService {
   constructor() {
     this.db = null;
-    this.localDbFile = path.join(__dirname, "..", "data", "local_db.json");
+    this.localDbFile = path.join(os.tmpdir(), "youpeak_local_db.json");
     this.ensureLocalDbFile();
   }
 
   ensureLocalDbFile() {
     try {
-      const dir = path.dirname(this.localDbFile);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
       if (!fs.existsSync(this.localDbFile)) {
         fs.writeFileSync(this.localDbFile, JSON.stringify({}), "utf8");
       }
     } catch (e) {}
   }
+
 
   readLocalDb() {
     try {
