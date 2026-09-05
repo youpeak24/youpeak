@@ -4,11 +4,39 @@ const path = require("path");
 
 if (admin.apps.length === 0) {
   try {
-    admin.initializeApp({
-      projectId: process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT || "youpeak-9ff65",
-    });
-  } catch (e) {}
+    let serviceAccount;
+    const keyPaths = [
+      path.resolve(__dirname, "../serviceAccountKey.json"),
+      path.resolve(__dirname, "../../serviceAccountKey.json"),
+      path.resolve(__dirname, "../../../serviceAccountKey.json"),
+      path.resolve(process.cwd(), "functions/backend/serviceAccountKey.json"),
+      path.resolve(process.cwd(), "serviceAccountKey.json")
+    ];
+
+    for (const kp of keyPaths) {
+      if (fs.existsSync(kp)) {
+        try {
+          serviceAccount = JSON.parse(fs.readFileSync(kp, "utf8"));
+          break;
+        } catch (e) {}
+      }
+    }
+
+    if (serviceAccount) {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        projectId: serviceAccount.project_id || "youpeak-9ff65"
+      });
+    } else {
+      admin.initializeApp({
+        projectId: process.env.GCP_PROJECT || process.env.GCLOUD_PROJECT || "youpeak-9ff65"
+      });
+    }
+  } catch (e) {
+    console.error("Firebase Admin init error:", e);
+  }
 }
+
 
 class FirestoreDbService {
   constructor() {
