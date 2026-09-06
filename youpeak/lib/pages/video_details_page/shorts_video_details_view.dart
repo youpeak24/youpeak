@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
@@ -117,8 +118,21 @@ class _ShortsVideoDetailsViewState extends State<ShortsVideoDetailsView> {
 
   Future<void> initializeVideoPlayer() async {
     try {
-      String videoPath = Database.onGetVideoUrl(widget.videoId) ?? await ConvertToNetwork.convert(widget.videoUrl);
-      videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(videoPath));
+      String? cachedPath = Database.onGetVideoUrl(widget.videoId);
+      String videoPath = "";
+      if (ConvertToNetwork.isValidVideoUrl(cachedPath)) {
+        videoPath = cachedPath!;
+      } else {
+        videoPath = await ConvertToNetwork.convert(widget.videoUrl);
+      }
+
+      if (videoPath.isEmpty) return;
+
+      if (videoPath.startsWith('http://') || videoPath.startsWith('https://')) {
+        videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(videoPath));
+      } else {
+        videoPlayerController = VideoPlayerController.file(File(videoPath));
+      }
 
       await videoPlayerController?.initialize();
 

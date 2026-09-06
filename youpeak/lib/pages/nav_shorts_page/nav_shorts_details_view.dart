@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:blurrycontainer/blurrycontainer.dart';
@@ -90,14 +91,26 @@ class _NavShortsDetailViewState extends State<NavShortsDetailView> {
 
   Future<void> initializeVideoPlayer() async {
     try {
-      String videoPath = Database.onGetVideoUrl(
-              controller.mainShortsVideos[widget.index].id!) ??
-          await ConvertToNetwork.convert(
-              controller.mainShortsVideos[widget.index].videoUrl!);
+      String videoId = controller.mainShortsVideos[widget.index].id ?? "";
+      String rawUrl = controller.mainShortsVideos[widget.index].videoUrl ?? "";
+      String? cachedPath = Database.onGetVideoUrl(videoId);
+      String videoPath = "";
 
-      videoPlayerController = VideoPlayerController.networkUrl(
-          Uri.parse(videoPath),
-          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+      if (ConvertToNetwork.isValidVideoUrl(cachedPath)) {
+        videoPath = cachedPath!;
+      } else {
+        videoPath = await ConvertToNetwork.convert(rawUrl);
+      }
+
+      if (videoPath.isEmpty) return;
+
+      if (videoPath.startsWith('http://') || videoPath.startsWith('https://')) {
+        videoPlayerController = VideoPlayerController.networkUrl(
+            Uri.parse(videoPath),
+            videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true));
+      } else {
+        videoPlayerController = VideoPlayerController.file(File(videoPath));
+      }
 
       await videoPlayerController?.initialize();
 

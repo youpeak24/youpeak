@@ -37,3 +37,28 @@
 -keep class com.arthenica.ffmpegkit.** { *; }
 -keep class com.antonkarpenko.ffmpegkit.** { *; }
 
+# Video Player & ExoPlayer / Media3
+-keep class com.google.android.exoplayer2.** { *; }
+-keep interface com.google.android.exoplayer2.** { *; }
+-dontwarn com.google.android.exoplayer2.**
+
+-keep class androidx.media3.** { *; }
+-keep interface androidx.media3.** { *; }
+-dontwarn androidx.media3.**
+
+-keep class io.flutter.plugins.videoplayer.** { *; }
+-dontwarn io.flutter.plugins.videoplayer.**
+
+# Audio Players
+-keep class xyz.luan.audioplayers.** { *; }
+-dontwarn xyz.luan.audioplayers.**
+-keep class com.ryanheise.audioservice.** { *; }
+-dontwarn com.ryanheise.audioservice.**
+
+# Network & OkHttp / HttpURLConnection
+-keep class okhttp3.** { *; }
+-dontwarn okhttp3.**
+-keep class com.google.gson.** { *; }
+-dontwarn com.google.gson.**
+
+

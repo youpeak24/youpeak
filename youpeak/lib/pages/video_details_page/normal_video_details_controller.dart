@@ -1135,9 +1135,18 @@ class NormalVideoDetailsController extends GetxController {
       showAd = false;
       isAdLoading = false;
       wasPlayingBeforeAd = false;
-      adShowCount = 0;
+      String? cachedPath = Database.onGetVideoUrl(videoId);
+      String videoPath = "";
+      if (ConvertToNetwork.isValidVideoUrl(cachedPath)) {
+        videoPath = cachedPath!;
+      } else {
+        videoPath = await ConvertToNetwork.convert(videoUrl);
+      }
 
-      String videoPath = Database.onGetVideoUrl(videoId) ?? await ConvertToNetwork.convert(videoUrl);
+      if (videoPath.isEmpty) {
+        AppSettings.showLog("❌ Invalid or empty video URL for videoId: $videoId");
+        return;
+      }
 
       if (videoPath.startsWith('http://') || videoPath.startsWith('https://')) {
         videoPlayerController = VideoPlayerController.networkUrl(Uri.parse(videoPath));
