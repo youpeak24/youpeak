@@ -29,10 +29,9 @@ class EasyDeepLinkManager {
 
   Future<void> _handleInitialLink() async {
     try {
-      final initialLinkString = await _appLinks!.getInitialLinkString();
-      if (initialLinkString != null) {
-        final uri = Uri.parse(initialLinkString);
-        _processLink(uri, isInitial: true);
+      final initialLink = await _appLinks!.getInitialLink();
+      if (initialLink != null) {
+        _processLink(initialLink, isInitial: true);
       }
     } catch (e) {
       if (_config?.debug == true) {

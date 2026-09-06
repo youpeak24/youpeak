@@ -208,7 +208,7 @@ class ReferralProgramView extends StatelessWidget {
       bottomNavigationBar: GestureDetector(
         onTap: () async {
           try {
-            Share.shareUri(Uri.parse(AppSettings.referralCodeLink));
+            Share.share(AppSettings.referralCodeLink);
           } catch (e) {
             AppSettings.showLog("Share Error => $e");
           }

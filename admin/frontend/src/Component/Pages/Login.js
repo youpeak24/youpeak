@@ -96,7 +96,7 @@ const Login = (props) => {
 
       <div className="d-flex overflow-hidden" style={{ height: "100vh" }}>
         <div className="d-lg-flex d-none col-lg-7 col-xl-6 p-5 h-100 flex-column justify-content-between align-items-start" style={{
-          background: "linear-gradient(135deg, #181136 0%, #2B1D6E 50%, #5A3EFE 100%)",
+          background: "linear-gradient(135deg, #0A7A44 0%, #1E4D2B 50%, #2D6A4F 100%)",
           color: "#ffffff"
         }}>
           <div>
@@ -107,15 +107,15 @@ const Login = (props) => {
             <h2 className="fw-bold mt-5" style={{ fontSize: "2.6rem", lineHeight: "1.2" }}>
               Control Center & Platform Management
             </h2>
-            <p style={{ opacity: 0.85, fontSize: "1.15rem", maxWidth: "480px", marginTop: "1.2rem" }}>
+            <p style={{ opacity: 0.9, fontSize: "1.15rem", maxWidth: "480px", marginTop: "1.2rem" }}>
               Manage users, live video broadcasts, monetization rewards, coin transactions, and app settings dynamically on YouPeak.
             </p>
           </div>
-          <div style={{ opacity: 0.7, fontSize: "0.95rem" }}>
+          <div style={{ opacity: 0.85, fontSize: "0.95rem" }}>
             © {new Date().getFullYear()} YouPeak Platform. All rights reserved.
           </div>
         </div>
-        <div className="col-12 col-lg-5 col-xl-6 h-100 overflow-auto" style={{ backgroundColor: "#130E26", color: "#F0EEFF" }}>
+        <div className="col-12 col-lg-5 col-xl-6 h-100 overflow-auto" style={{ backgroundColor: "#F8FAFC", color: "#1C1C1E" }}>
           <div className="p-4 p-md-5 d-flex align-items-center justify-content-center min-vh-100">
             <div className="w-100 mx-auto" style={{ maxWidth: "440px" }}>
               <div>
@@ -127,8 +127,8 @@ const Login = (props) => {
                   width={75}
                 />
               </div>
-              <h2 className="fw-bold" style={{ color: "#FFFFFF" }}>Login to your account</h2>
-              <p style={{ color: "#B5A4FE", fontSize: "0.95rem" }}>
+              <h2 className="fw-bold" style={{ color: "#1C1C1E" }}>Login to your account</h2>
+              <p style={{ color: "#55606E", fontSize: "0.95rem" }}>
                 Let's connect, chat, and spark real connections. Enter your
                 credentials to continue your journey on {projectName}.
               </p>
@@ -186,7 +186,7 @@ const Login = (props) => {
               <div className="w-100" >
                 <h4
                   className="cursor-pointer fs-6 text-end text-secondary"
-                  style={{ fontWeight: 500, fontSize: "small" }}
+                  style={{ fontWeight: 600, fontSize: "small", color: "#0A7A44" }}
                   onClick={() => navigate("/forgotPassword")}
                 >
                   Forgot Password ?
@@ -195,12 +195,11 @@ const Login = (props) => {
               <div className="d-flex flex-column justify-content-center w-100 gap-3 mt-4">
                 <Button
                   btnName={loading ? "Loading..." : "Login"}
-                  newClass={"login-btn  login w-100 py-2 fw-medium"}
+                  newClass={"login-btn login w-100 py-2 fw-medium"}
+                  style={{ backgroundColor: "#0A7A44", borderColor: "#0A7A44", color: "#FFFFFF" }}
                   onClick={handleSubmit}
                   disabled={loading}
                 />
-
-              
               </div>
             </div>
           </div>
