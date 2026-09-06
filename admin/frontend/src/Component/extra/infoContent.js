@@ -84,7 +84,7 @@ export const razorpayContent = [
                     href="https://dashboard.razorpay.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Get it from Razorpay Dashboard
                 </a>
@@ -100,7 +100,7 @@ export const razorpayContent = [
                     href="https://dashboard.razorpay.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Manage it in Razorpay Dashboard
                 </a>
@@ -123,7 +123,7 @@ export const stripeContent = [
                     href="https://dashboard.stripe.com/apikeys"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Get it from Stripe Dashboard
                 </a>
@@ -139,7 +139,7 @@ export const stripeContent = [
                     href="https://dashboard.stripe.com/apikeys"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Manage it in Stripe Dashboard
                 </a>
@@ -158,7 +158,7 @@ export const googlePlayContent = [
                     href="https://developer.android.com/google/play/billing"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Learn more at Google Play Billing Docs
                 </a>
@@ -181,7 +181,7 @@ export const flutterWaveContent = [
                     href="https://dashboard.flutterwave.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Get it from Flutterwave Dashboard
                 </a>
@@ -204,7 +204,7 @@ export const paystackContent = [
                     href="https://dashboard.paystack.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Get it from Paystack Dashboard
                 </a>
@@ -220,7 +220,7 @@ export const paystackContent = [
                     href="https://dashboard.paystack.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Manage it in Paystack Dashboard
                 </a>
@@ -243,7 +243,7 @@ export const paypalContent = [
                     href="https://developer.paypal.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Get it from PayPal Developer Dashboard
                 </a>
@@ -259,7 +259,7 @@ export const paypalContent = [
                     href="https://developer.paypal.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Manage it in PayPal Developer Dashboard
                 </a>
@@ -282,7 +282,7 @@ export const cashfreeContent = [
                     href="https://merchant.cashfree.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Get it from Cashfree Merchant Dashboard
                 </a>
@@ -298,7 +298,7 @@ export const cashfreeContent = [
                     href="https://merchant.cashfree.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#0d6efd", textDecoration: "underline" }}
+                    style={{ color: "#059669", textDecoration: "underline" }}
                 >
                     Manage it in Cashfree Merchant Dashboard
                 </a>

@@ -100,7 +100,7 @@
 .gradientText {
   display: block;
   font-size: 28px;
-  background: linear-gradient(to right, #3b82f6, #2563eb);
+  background: linear-gradient(to right, #059669, #10b981);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

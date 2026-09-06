@@ -4,13 +4,13 @@
 :root {
   --black--: #000;
   --white--: #fff;
-  --prime--: #524ae3;
+  --prime--: #059669;
   --blackPrime--: #0f172a;
   --grayPrime--: #cfcfcf;
   --inputBorder--: #cbd5e1;
-  --btnPrime--: #524ae3;
-  --pink--: #2563eb;
-  --lightOrangeColor: #8A82FB;
+  --btnPrime--: #059669;
+  --pink--: #059669;
+  --lightOrangeColor: #10b981;
 }
 
 /* Start Default CSS */

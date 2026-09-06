@@ -22,7 +22,7 @@ const ShowMoreText = ({ text, maxLength = 30, className = "" }) => {
       <span style={{ wordBreak: "break-word" }}>
         {expanded ? text : `${text.substring(0, maxLength)}...`}
       </span>{" "}
-      <span className="text-nowrap" onClick={handleToggle} style={{ color: "#2563eb" , cursor: "pointer"}}>
+      <span className="text-nowrap" onClick={handleToggle} style={{ color: "#059669" , cursor: "pointer", fontWeight: "500"}}>
         {expanded ? "Show Less" : "Show More"}
       </span>
     </span>

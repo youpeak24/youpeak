@@ -7,14 +7,14 @@
 :root {
   --black--: #000;
   --white--: #fff;
-  --prime--: #524ae3;
+  --prime--: #059669;
   --blackPrime--: #0f172a;
   --grayPrime--: #404040;
   --inputBorder--: #cbd5e1;
-  --btnPrime--: #524ae3;
+  --btnPrime--: #059669;
   --gray--: #656565;
-  --pink--: #2563eb;
-  --lightOrangeColor: #8A82FB;
+  --pink--: #059669;
+  --lightOrangeColor: #10b981;
 }
 
 /* ========================================= Navbar Page CSS ========================== */
@@ -1154,8 +1154,8 @@ textarea::-webkit-scrollbar {
 } */
 
 .userPage .table-custom input[type="checkbox"]:not(.MuiSwitch-input):checked {
-  background-color: #2563eb;
-  border-color: #2563eb;
+  background-color: #059669;
+  border-color: #059669;
 }
 
 .userPage .table-custom input[type="checkbox"]:not(.MuiSwitch-input):checked::after {
@@ -1440,7 +1440,7 @@ textarea::-webkit-scrollbar {
 .avatar-setting .avatar-img-icon svg {
   padding: 5px;
   font-size: 29px;
-  color: #524ae3;
+  color: #059669;
 }
 
 .avatar-setting .userSettingBox {
@@ -2724,8 +2724,8 @@ textarea:focus {
 .badge-primary,
 a.badge-primary:focus,
 a.badge-primary:hover {
-  background-color: #bfddfc;
-  color: #007bff;
+  background-color: #d1fae5;
+  color: #047857;
 }
 
 .badge-success,

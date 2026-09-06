@@ -1,10 +1,10 @@
-/* Settings Page Custom Styles — theme aligned with reference (violet accent) */
+/* Settings Page Custom Styles — theme aligned with reference (emerald accent) */
 :root {
-    --settings-accent: #2563eb;
-    --settings-accent-hover: #1d4ed8;
-    --settings-accent-active: #1e40af;
-    --settings-accent-border: #2563eb;
-    --settings-accent-ring: rgba(37, 99, 235, 0.28);
+    --settings-accent: #059669;
+    --settings-accent-hover: #047857;
+    --settings-accent-active: #064e3b;
+    --settings-accent-border: #059669;
+    --settings-accent-ring: rgba(5, 150, 105, 0.28);
     --settings-surface: #ffffff;
     --settings-muted: #64748b;
     --settings-border: #e5e7eb;

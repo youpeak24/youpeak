@@ -277,7 +277,7 @@ const Dashboard = (props) => {
             formatter: function (val) {
               return parseInt(val) + "%";
             },
-            color: "#2563eb",
+            color: "#059669",
             fontWeight: 600,
             fontSize: "30px",
             show: true,
@@ -288,7 +288,7 @@ const Dashboard = (props) => {
     labels: ["Active Users" , "Blocked Users"],
     fill: {
       type: "solid",
-      colors: ["#2563eb" , "#786d81"],
+      colors: ["#059669" , "#786d81"],
     },
     stroke: {
       lineCap: "round",
