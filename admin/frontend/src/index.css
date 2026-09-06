@@ -1,35 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ── YouPeak Universal High-Contrast Dark Purple System ─────────────────────────────── */
+/* ── YouPeak Official Design System (Forest Green #0A7A44, Mint Green #E8F5E9, Gold #FFD700) ── */
 :root {
-  --primary:          #7C5CFC;
-  --primary-hover:    #6644EA;
-  --primary-light:    rgba(124, 92, 252, 0.2);
-  --bg-main:          #0B0819;
-  --bg-sidebar:       #130E26;
-  --bg-card:          #1C1538;
-  --bg-card2:         #231B47;
-  --border-color:     rgba(124, 92, 252, 0.25);
-  --text-white:       #F0EEFF;
-  --text-primary:     #E0D8FF;
-  --text-muted:       #B5A4FE;
-  --text-dark:        #F0EEFF;
-  --success:          #22C55E;
-  --danger:           #EF4444;
-  --warning:          #F59E0B;
-  --info:             #38BDF8;
-  --shadow-card:      0 4px 24px rgba(0,0,0,0.5);
+  --primary:          #0A7A44; /* Forest Green Primary Accent */
+  --primary-hover:    #1E4D2B; /* Dark Forest Accent */
+  --primary-light:    rgba(10, 122, 68, 0.12);
+  --secondary-bg:     #E8F5E9; /* Mint Green Container & Pill BG */
+  --gold-vip:         #FFD700; /* Gold VIP Accent */
+  --search-bg:        #F0F4F1; /* Search Container BG */
+  --text-dark:        #1C1C1E; /* Dark Charcoal Headings & Body */
+  --text-white:       #1C1C1E;
+  --text-primary:     #1C1C1E;
+  --text-muted:       #55606E;
+  --bg-main:          #F8FAFC;
+  --bg-sidebar:       #FFFFFF;
+  --bg-card:          #FFFFFF;
+  --bg-card2:         #F0F4F1;
+  --border-color:     #E2E8F0;
+  --success:          #0A7A44;
+  --danger:           #D32F2F; /* Crimson Red Notification Accent */
+  --warning:          #FFD700;
+  --info:             #0284C7;
+  --shadow-card:      0 4px 20px rgba(10, 122, 68, 0.08);
   --radius-card:      14px;
-  --radius-btn:       8px;
+  --radius-btn:       10px;
   --transition:       0.25s ease;
 
   /* Override setting.css variables */
-  --settings-surface: #130E26;
-  --settings-border: rgba(124, 92, 252, 0.25);
-  --settings-muted: #B5A4FE;
-  --settings-accent: #7C5CFC;
-  --settings-accent-hover: #6644EA;
-  --settings-accent-border: #7C5CFC;
+  --settings-surface: #FFFFFF;
+  --settings-border: #E2E8F0;
+  --settings-muted: #55606E;
+  --settings-accent: #0A7A44;
+  --settings-accent-hover: #1E4D2B;
+  --settings-accent-border: #0A7A44;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -40,37 +43,38 @@ body {
   margin: 0;
   font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   background-color: var(--bg-main) !important;
-  color: var(--text-white) !important;
+  color: var(--text-dark) !important;
   -webkit-font-smoothing: antialiased;
 }
 
 .mainContainer, .containerRight, .mainAdmin, .bg-white, .bg-light, .userPage, .mainPage {
   background-color: var(--bg-main) !important;
-  color: var(--text-white) !important;
+  color: var(--text-dark) !important;
 }
 
 /* ── Sidebar & Brand Header ───────────────────────────────────────────── */
 .sideBar, .webSidebar, .mobSidebar, .mainSidebar {
   background-color: var(--bg-sidebar) !important;
   border-right: 1px solid var(--border-color) !important;
+  box-shadow: 2px 0 12px rgba(10, 122, 68, 0.05) !important;
 }
 
 .sideBarLogo {
   background: transparent !important;
-  background-color: transparent !important;
   border-bottom: 1px solid var(--border-color) !important;
-  padding: 16px 20px !important;
+  padding: 18px 20px !important;
 }
 
 .sideBarLogo span {
-  color: #FFFFFF !important;
-  font-weight: 700 !important;
-  font-size: 1.3rem !important;
+  color: #0A7A44 !important;
+  font-weight: 800 !important;
+  font-size: 1.4rem !important;
+  letter-spacing: -0.02em !important;
 }
 
 .sideBarTitle, .sidebar-title {
-  color: #B5A4FE !important;
-  font-size: 0.75rem !important;
+  color: #55606E !important;
+  font-size: 0.72rem !important;
   font-weight: 700 !important;
   letter-spacing: 0.08em !important;
   text-transform: uppercase !important;
@@ -82,7 +86,7 @@ body {
 }
 
 .sidebar-nav-container {
-  background: var(--bg-card) !important;
+  background: #FFFFFF !important;
   border: 1px solid var(--border-color) !important;
   border-radius: 12px !important;
   padding: 6px !important;
@@ -96,7 +100,7 @@ body {
 }
 
 .mainMenu li a {
-  color: #E0D8FF !important;
+  color: #1C1C1E !important;
   font-size: 14px !important;
   font-weight: 500 !important;
   padding: 10px 14px !important;
@@ -110,21 +114,21 @@ body {
 
 .mainMenu li a svg,
 .mainMenu li a i {
-  color: #B5A4FE !important;
+  color: #0A7A44 !important;
   margin-right: 10px !important;
 }
 
 .mainMenu li a:hover {
-  background-color: rgba(124, 92, 252, 0.18) !important;
-  color: #FFFFFF !important;
+  background-color: #E8F5E9 !important;
+  color: #0A7A44 !important;
 }
 
 .mainMenu .activeMenu,
 .mainMenu li a.activeMenu {
-  background: linear-gradient(90deg, #7C5CFC 0%, #6437F6 100%) !important;
+  background: #0A7A44 !important;
   color: #FFFFFF !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 14px rgba(124, 92, 252, 0.45) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(10, 122, 68, 0.35) !important;
   border-radius: 8px !important;
 }
 
@@ -134,56 +138,89 @@ body {
   color: #FFFFFF !important;
 }
 
-/* ── Top Navbar ───────────────────────────────────────────────────────── */
+/* ── Top Navbar & Search ────────────────────────────────────────────────── */
 .mainNavbar, .boxNav {
   background-color: var(--bg-main) !important;
 }
 
 .navBar {
-  background-color: var(--bg-sidebar) !important;
+  background-color: #FFFFFF !important;
   border: 1px solid var(--border-color) !important;
   border-radius: 12px !important;
-  color: var(--text-white) !important;
+  color: var(--text-dark) !important;
   box-shadow: var(--shadow-card) !important;
 }
 
+.navbar-search-input,
+.search-input-box input,
+.dashboardHeader input[type="text"] {
+  background-color: #F0F4F1 !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  color: #1C1C1E !important;
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+}
+
+.navbar-search-input::placeholder,
+.search-input-box input::placeholder,
+.dashboardHeader input[type="text"]::placeholder {
+  color: #55606E !important;
+}
+
 .navbar-profile-name {
-  color: #F0EEFF !important;
-  font-weight: 600 !important;
+  color: #1C1C1E !important;
+  font-weight: 700 !important;
   font-size: 14px !important;
 }
 
 .navbar-profile-menu {
-  background-color: var(--bg-card) !important;
+  background-color: #FFFFFF !important;
   border: 1px solid var(--border-color) !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
-  color: var(--text-white) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important;
+  color: var(--text-dark) !important;
 }
 
 .navbar-profile-header-name {
-  color: #FFFFFF !important;
+  color: #1C1C1E !important;
 }
 
 .navbar-profile-header-email {
-  color: #B5A4FE !important;
+  color: #55606E !important;
 }
 
 .navbar-profile-item {
-  color: #E0D8FF !important;
+  color: #1C1C1E !important;
 }
 
 .navbar-profile-item:hover {
-  background-color: rgba(124, 92, 252, 0.2) !important;
+  background-color: #E8F5E9 !important;
+  color: #0A7A44 !important;
+}
+
+/* ── Notification & VIP Badges ────────────────────────────────────────── */
+.notification-dot,
+.unread-badge {
+  background-color: #D32F2F !important;
   color: #FFFFFF !important;
 }
 
-/* ── Settings Page & Profile Page Dark Theme Overrides ─────────────────── */
+.badge-vip,
+.vip-badge {
+  background-color: #FFD700 !important;
+  color: #1C1C1E !important;
+  font-weight: 800 !important;
+  border-radius: 6px !important;
+  padding: 4px 8px !important;
+}
+
+/* ── Settings & Profile Panels ─────────────────── */
 .settings-page-header,
 .settings-toolbar,
 .settings-toolbar-sticky,
 .settings-toolbar-row--actions {
-  background-color: var(--bg-sidebar) !important;
-  background: var(--bg-sidebar) !important;
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
   border-color: var(--border-color) !important;
   border-radius: 12px !important;
   margin-bottom: 16px !important;
@@ -191,12 +228,12 @@ body {
 
 .settings-page-title,
 .settings-title {
-  color: #FFFFFF !important;
-  font-weight: 700 !important;
+  color: #1C1C1E !important;
+  font-weight: 800 !important;
 }
 
 .settings-page-subtitle {
-  color: #B5A4FE !important;
+  color: #55606E !important;
 }
 
 .setting-card,
@@ -205,26 +242,26 @@ body {
 .profile-img,
 .userSettingBox,
 .payment-setting-box {
-  background-color: var(--bg-card) !important;
-  background: var(--bg-card) !important;
+  background-color: #FFFFFF !important;
+  background: #FFFFFF !important;
   border: 1px solid var(--border-color) !important;
-  color: #F0EEFF !important;
+  color: #1C1C1E !important;
   border-radius: 14px !important;
   box-shadow: var(--shadow-card) !important;
 }
 
 .setting-card-header {
-  background-color: var(--bg-card2) !important;
-  background: var(--bg-card2) !important;
+  background-color: #F0F4F1 !important;
+  background: #F0F4F1 !important;
   border-bottom: 1px solid var(--border-color) !important;
-  color: #FFFFFF !important;
+  color: #1C1C1E !important;
 }
 
 .setting-card-title,
 .withdrawal-box h5,
 .withdrawal-box h6,
 .withdrawal-box h4 {
-  color: #FFFFFF !important;
+  color: #1C1C1E !important;
   font-weight: 700 !important;
 }
 
@@ -233,7 +270,7 @@ body {
 .setting-section-title,
 .withdrawal-box label,
 .withdrawal-input label {
-  color: #B5A4FE !important;
+  color: #55606E !important;
   font-weight: 600 !important;
 }
 
@@ -242,25 +279,25 @@ body {
 }
 
 .settings-nav-link {
-  color: #B5A4FE !important;
+  color: #55606E !important;
   font-weight: 600 !important;
   background: transparent !important;
   white-space: nowrap !important;
 }
 
 .settings-nav-link:hover {
-  color: #FFFFFF !important;
+  color: #0A7A44 !important;
 }
 
 .settings-nav-link.active {
-  color: #7C5CFC !important;
-  border-bottom-color: #7C5CFC !important;
+  color: #0A7A44 !important;
+  border-bottom-color: #0A7A44 !important;
   background: transparent !important;
 }
 
 .settings-nav-link.active .settings-nav-icon,
 .settings-nav-link:hover .settings-nav-icon {
-  color: #7C5CFC !important;
+  color: #0A7A44 !important;
 }
 
 .setting-card input,
@@ -270,28 +307,20 @@ body {
 .withdrawal-box textarea,
 .withdrawal-box select,
 .withdrawal-input input {
-  background-color: var(--bg-card2) !important;
-  background: var(--bg-card2) !important;
-  color: #FFFFFF !important;
+  background-color: #F0F4F1 !important;
+  background: #F0F4F1 !important;
+  color: #1C1C1E !important;
   border: 1px solid var(--border-color) !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
 }
 
 .setting-card input::placeholder,
 .withdrawal-box input::placeholder,
 .withdrawal-input input::placeholder {
-  color: #8E7EFF !important;
+  color: #55606E !important;
 }
 
-.setting-card input:disabled,
-.withdrawal-box input:disabled,
-.withdrawal-input input:disabled {
-  background-color: rgba(35, 27, 71, 0.6) !important;
-  color: #B5A4FE !important;
-  border-color: rgba(124, 92, 252, 0.15) !important;
-}
-
-/* ── Bootstrap Nav Tabs & Navigation Pills (Fixes Text Overflow & Multi-line Wrapping) ──── */
+/* ── Navigation Tabs & Category Pills (Matching Mint Green & Forest Green Specs) ──── */
 .nav-tabs, .nav-pills {
   display: flex !important;
   flex-wrap: wrap !important;
@@ -317,25 +346,23 @@ body {
   width: auto !important;
   min-width: max-content !important;
   height: auto !important;
-  min-height: 42px !important;
-  padding: 8px 22px !important;
-  font-size: 0.88rem !important;
+  min-height: 40px !important;
+  padding: 8px 20px !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
-  border-radius: 10px !important;
+  border-radius: 20px !important; /* Category pill shape */
   line-height: 1.3 !important;
-  overflow: visible !important;
   text-align: center !important;
-  background-color: var(--bg-card) !important;
-  color: #B5A4FE !important;
-  border: 1px solid var(--border-color) !important;
+  background-color: #E8F5E9 !important; /* Inactive Mint Green */
+  color: #1C1C1E !important; /* Dark Charcoal Text */
+  border: 1px solid transparent !important;
   transition: all 0.2s ease !important;
 }
 
 .nav-tabs .nav-link:hover,
 .nav-pills .nav-link:hover {
-  background-color: var(--bg-card2) !important;
-  color: #FFFFFF !important;
-  border-color: rgba(124, 92, 252, 0.4) !important;
+  background-color: #D4EDDA !important;
+  color: #0A7A44 !important;
 }
 
 .nav-tabs .nav-link.active,
@@ -343,13 +370,12 @@ body {
 .nav-link.active {
   white-space: nowrap !important;
   word-break: keep-all !important;
-  background: linear-gradient(90deg, #7C5CFC 0%, #6437F6 100%) !important;
+  background: #0A7A44 !important; /* Active Forest Green */
   color: #FFFFFF !important;
   border: none !important;
-  box-shadow: 0 4px 14px rgba(124, 92, 252, 0.45) !important;
-  height: auto !important;
-  min-height: 42px !important;
-  padding: 8px 22px !important;
+  box-shadow: 0 4px 12px rgba(10, 122, 68, 0.3) !important;
+  min-height: 40px !important;
+  padding: 8px 20px !important;
 }
 
 /* ── MultiButton & Header Tabs ────────────────────────────────────────── */
@@ -358,34 +384,36 @@ body {
 }
 
 .multiButton .MuiToggleButtonGroup-root {
-  background-color: var(--bg-card) !important;
+  background-color: #E8F5E9 !important;
   border: 1px solid var(--border-color) !important;
-  border-radius: 10px !important;
+  border-radius: 20px !important;
   padding: 3px !important;
 }
 
 .multiButton .MuiToggleButton-root {
-  color: #B5A4FE !important;
+  color: #1C1C1E !important;
   border: none !important;
-  border-radius: 8px !important;
+  border-radius: 18px !important;
   padding: 6px 18px !important;
+  font-size: 14px !important;
   font-weight: 600 !important;
   text-transform: capitalize !important;
   white-space: nowrap !important;
 }
 
 .multiButton .MuiToggleButton-root.Mui-selected {
-  background: linear-gradient(90deg, #7C5CFC 0%, #6437F6 100%) !important;
+  background: #0A7A44 !important;
   color: #FFFFFF !important;
-  box-shadow: 0 4px 12px rgba(124, 92, 252, 0.4) !important;
+  box-shadow: 0 4px 12px rgba(10, 122, 68, 0.3) !important;
 }
 
 /* ── Tables & Data Grids ────────────────────────────────────────────── */
 .user-table, .user-table-top, .table-responsive, .table-custom, .dashboardHeader, .primeHeader {
-  background-color: var(--bg-card) !important;
+  background-color: #FFFFFF !important;
   border-radius: 14px !important;
   border: 1px solid var(--border-color) !important;
-  color: #F0EEFF !important;
+  color: #1C1C1E !important;
+  box-shadow: var(--shadow-card) !important;
 }
 
 .user-table-top {
@@ -394,12 +422,12 @@ body {
 }
 
 .user-table-top h4, .user-table-top h5, .user-table-top h6 {
-  color: #FFFFFF !important;
-  font-weight: 700 !important;
+  color: #1C1C1E !important;
+  font-weight: 800 !important;
 }
 
 .table, table {
-  color: #E0D8FF !important;
+  color: #1C1C1E !important;
   background-color: transparent !important;
   border-collapse: separate !important;
   border-spacing: 0 !important;
@@ -407,98 +435,58 @@ body {
 }
 
 .table thead th, table thead th {
-  background-color: #221A47 !important;
-  color: #F0EEFF !important;
+  background-color: #E8F5E9 !important; /* Mint Green Table Header */
+  color: #1C1C1E !important;
   font-weight: 700 !important;
   font-size: 0.78rem !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
   padding: 14px 16px !important;
-  border-bottom: 2px solid var(--border-color) !important;
+  border-bottom: 2px solid #C8E6C9 !important;
   white-space: nowrap !important;
 }
 
 .table tbody td, table tbody td {
-  background-color: #171133 !important;
-  color: #E0D8FF !important;
+  background-color: #FFFFFF !important;
+  color: #1C1C1E !important;
   padding: 14px 16px !important;
-  border-bottom: 1px solid rgba(124, 92, 252, 0.15) !important;
+  border-bottom: 1px solid #F0F4F1 !important;
   vertical-align: middle !important;
 }
 
 .table tbody tr:hover td, table tbody tr:hover td {
-  background-color: #251D4D !important;
-  color: #FFFFFF !important;
+  background-color: #F8FAF9 !important;
+  color: #0A7A44 !important;
 }
 
-/* ── Badges, Tags & Labels ────────────────────────────────────────────── */
+/* ── Badges & Status Tags ────────────────────────────────────────────── */
 .badge {
-  background-color: #231B47 !important;
-  color: #E0D8FF !important;
-  border: 1px solid rgba(124, 92, 252, 0.3) !important;
+  background-color: #E8F5E9 !important;
+  color: #0A7A44 !important;
+  border: 1px solid rgba(10, 122, 68, 0.2) !important;
   font-weight: 600 !important;
   padding: 5px 10px !important;
   border-radius: 6px !important;
   white-space: nowrap !important;
 }
 
-.badge.bg-secondary, .badge.bg-light {
-  background-color: #2D2359 !important;
-  color: #B5A4FE !important;
-}
-
 .badge.bg-success {
-  background-color: rgba(34, 197, 94, 0.2) !important;
-  color: #4ADE80 !important;
-  border-color: rgba(34, 197, 94, 0.4) !important;
+  background-color: #E8F5E9 !important;
+  color: #0A7A44 !important;
+  border-color: #C8E6C9 !important;
 }
 
 .badge.bg-danger {
-  background-color: rgba(239, 68, 68, 0.2) !important;
-  color: #F87171 !important;
-  border-color: rgba(239, 68, 68, 0.4) !important;
+  background-color: #FFEBEE !important;
+  color: #D32F2F !important;
+  border-color: #FFCDD2 !important;
 }
 
 label, .label-form {
-  color: #B5A4FE !important;
+  color: #55606E !important;
   font-weight: 600 !important;
   font-size: 0.85rem !important;
   margin-bottom: 6px !important;
-}
-
-/* ── Dashboard & Analytics Cards ─────────────────────────────────────── */
-.dashboard-chart-box, .dashboard-total-user, .user-activity, .dashboard-user-count {
-  background-color: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: 14px !important;
-  color: #F0EEFF !important;
-}
-
-.user-activity h6, .dashboard-chart-box h6 {
-  color: #FFFFFF !important;
-  font-weight: 700 !important;
-}
-
-.apexcharts-text tspan {
-  fill: #B5A4FE !important;
-}
-
-.apexcharts-legend-text {
-  color: #E0D8FF !important;
-}
-
-/* ── Headings & High Contrast Text ────────────────────────────────────── */
-h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-  color: #F0EEFF !important;
-  font-weight: 700 !important;
-}
-
-p, span, div, td, th {
-  color: inherit;
-}
-
-.text-secondary, .text-muted {
-  color: #B5A4FE !important;
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────── */
@@ -508,13 +496,13 @@ p, span, div, td, th {
 .btn-theme,
 .submit-btn,
 .settings-submit-btn {
-  background: linear-gradient(90deg, #7C5CFC 0%, #6437F6 100%) !important;
+  background: #0A7A44 !important; /* Forest Green Button */
   border: none !important;
   color: #FFFFFF !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   border-radius: var(--radius-btn) !important;
-  box-shadow: 0 4px 14px rgba(124, 92, 252, 0.4) !important;
-  padding: 8px 18px !important;
+  box-shadow: 0 4px 14px rgba(10, 122, 68, 0.3) !important;
+  padding: 10px 20px !important;
   transition: var(--transition);
   white-space: nowrap !important;
 }
@@ -524,112 +512,52 @@ p, span, div, td, th {
 .btn-theme:hover,
 .submit-btn:hover,
 .settings-submit-btn:hover {
-  background: linear-gradient(90deg, #6644EA 0%, #5227E0 100%) !important;
-  box-shadow: 0 6px 20px rgba(124, 92, 252, 0.6) !important;
+  background: #1E4D2B !important; /* Dark Forest Hover */
+  box-shadow: 0 6px 18px rgba(10, 122, 68, 0.45) !important;
   color: #FFFFFF !important;
 }
 
 /* ── Cards & Panels ──────────────────────────────────────────────────── */
 .card, .card1, .card-custom, .box-shadow {
-  background-color: var(--bg-card) !important;
+  background-color: #FFFFFF !important;
   border: 1px solid var(--border-color) !important;
-  color: var(--text-white) !important;
+  color: #1C1C1E !important;
   border-radius: var(--radius-card) !important;
   box-shadow: var(--shadow-card) !important;
 }
 
 .card .card-header, .card-header, .cardHeader {
-  background-color: var(--bg-card2) !important;
+  background-color: #F0F4F1 !important;
   border-bottom: 1px solid var(--border-color) !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
+  color: #1C1C1E !important;
+  font-weight: 700 !important;
 }
 
 /* ── Inputs & Form Controls ─────────────────────────────────────────── */
 input, textarea, select, .form-control, .form-select, .form-input, .password-input {
-  background-color: var(--bg-card2) !important;
+  background-color: #F0F4F1 !important;
   border: 1px solid var(--border-color) !important;
-  color: #FFFFFF !important;
-  border-radius: var(--radius-btn) !important;
+  color: #1C1C1E !important;
+  border-radius: 10px !important;
   padding: 10px 14px !important;
 }
 
 option {
-  background-color: #231B47 !important;
-  color: #FFFFFF !important;
+  background-color: #FFFFFF !important;
+  color: #1C1C1E !important;
 }
 
 input::placeholder, textarea::placeholder {
-  color: #8E7EFF !important;
+  color: #55606E !important;
 }
 
 input:focus, textarea:focus, select:focus,
 .form-control:focus, .form-select:focus {
-  border-color: #7C5CFC !important;
-  box-shadow: 0 0 0 3px rgba(124, 92, 252, 0.3) !important;
+  border-color: #0A7A44 !important;
+  box-shadow: 0 0 0 3px rgba(10, 122, 68, 0.2) !important;
   outline: none !important;
-  background-color: var(--bg-card2) !important;
-  color: #FFFFFF !important;
-}
-
-/* ── Modals & Dialogs ───────────────────────────────────────────────── */
-.modal-content,
-.model-style,
-.MuiPaper-root,
-.MuiDialog-paper {
-  background-color: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-  color: #F0EEFF !important;
-  border-radius: var(--radius-card) !important;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.8) !important;
-}
-
-.model-style {
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  width: 90% !important;
-  max-width: 480px !important;
-  padding: 24px !important;
-  outline: none !important;
-  background-color: #1C1538 !important;
-  border-radius: 16px !important;
-}
-
-.model-header, .modal-header {
-  border-bottom: 1px solid var(--border-color) !important;
-  padding-bottom: 12px !important;
-  margin-bottom: 16px !important;
-}
-
-.model-header p,
-.modal-title,
-.modal-header h5,
-#language-required-dialog-title {
-  color: #FFFFFF !important;
-  font-weight: 700 !important;
-  font-size: 1.15rem !important;
-}
-
-.model-body, .modal-body {
-  color: #E0D8FF !important;
-  font-size: 0.95rem !important;
-  line-height: 1.5 !important;
-}
-
-.model-body p, .modal-body p {
-  color: #E0D8FF !important;
-}
-
-.model-footer, .modal-footer {
-  border-top: 1px solid var(--border-color) !important;
-  margin-top: 16px !important;
-  padding-top: 12px !important;
-}
-
-.modal-backdrop {
-  background-color: rgba(5, 3, 15, 0.85) !important;
+  background-color: #FFFFFF !important;
+  color: #1C1C1E !important;
 }
 
 /* ── Custom Scrollbars ───────────────────────────────────────────────── */
@@ -643,10 +571,10 @@ input:focus, textarea:focus, select:focus,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #392B75;
+  background: #C8E6C9;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #7C5CFC;
+  background: #0A7A44;
 }
